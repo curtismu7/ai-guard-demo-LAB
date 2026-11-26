@@ -1,0 +1,2 @@
+be40e836d3a1ac8296a195899bdb6405a9fe6c8c804f743ed081d257c7130015 ai-guard-demo-flow.json
+# Studio data in diagram-studio/1 shape (rule 17). This flow is lab-local (the studio has no AI-guard diagram yet); it is loaded by name and its hash is pinned. To re-vendor, edit the JSON, then: shasum -a 256 ai-guard-demo-flow.json

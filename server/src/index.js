@@ -1,0 +1,18 @@
+import { fileURLToPath } from 'node:url';
+import { startHttpServer } from './app.js';
+import { allPassed, runChecks } from './doctor.js';
+import { isSeMock } from './config.js';
+
+// Local runs read the repo-root .env (real env vars win). The mock-only SE build never reads one: its settings come from the manifest.
+if (process.env.MODE !== 'se-mock') { try { process.loadEnvFile(fileURLToPath(new URL('../../.env', import.meta.url))); } catch { /* no .env */ } }
+
+const checks = runChecks();
+if (!allPassed(checks)) {
+  for (const c of checks.filter((x) => x.level === 'fail')) console.error(`[ai-guard-demo] refusing to start: ${c.id}: ${c.detail}`);
+  process.exit(1);
+}
+const { url, sidecarUrl, embedded } = await startHttpServer();
+console.log(`[ai-guard-demo] MODE=${isSeMock() ? 'se-mock (hosted and simulated, per-visitor workspaces)' : 'local'}`);
+console.log(`[ai-guard-demo] mock gateway + API at ${url} (loopback unless AI_GUARD_BIND is set)`);
+console.log(`[ai-guard-demo] ${embedded ? 'embedded' : 'external'} STAND-IN sidecar at ${sidecarUrl} (not a real classifier)`);
+console.log(`[ai-guard-demo] API: GET ${url}api/health | GET ${url}api/scenarios | POST ${url}api/run | GET ${url}api/decisions`);

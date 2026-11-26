@@ -1,0 +1,134 @@
+{
+  "schema": "diagram-studio/1",
+  "id": "ai-guard-demo-flow",
+  "title": "One call through the guard: key, grant, guardrail, verdict",
+  "lede": "Simulated: a mock agent presents a registry key, the grant decides what it may reach, the per-key guardrail screens the text with a stand-in sidecar detector, and the gateway allows or blocks. Nothing here is measured on a real tenant.",
+  "groups": {
+    "agent": {
+      "label": "Agent (holds a virtual key)",
+      "color": "amber"
+    },
+    "gw": {
+      "label": "Agent gateway (mock)",
+      "color": "red"
+    },
+    "reg": {
+      "label": "Agent Registry (mock)",
+      "color": "grey"
+    },
+    "guard": {
+      "label": "Guardrail",
+      "color": "green"
+    },
+    "backend": {
+      "label": "MCP backend",
+      "color": "blue"
+    },
+    "refusal": {
+      "label": "Refusal",
+      "color": "red"
+    }
+  },
+  "nodes": [
+    {
+      "id": "agent",
+      "group": "agent",
+      "label": "Agent",
+      "sub": "Authorization: Bearer vk-mock-\u2026"
+    },
+    {
+      "id": "identity",
+      "group": "reg",
+      "label": "Identity",
+      "sub": "key exists, not revoked, not expired"
+    },
+    {
+      "id": "grant",
+      "group": "reg",
+      "label": "Grant",
+      "sub": "scope + selected apps + tool filter"
+    },
+    {
+      "id": "guardrail",
+      "group": "guard",
+      "label": "Per-key guardrail",
+      "sub": "sidecar URL, timeout, Block Agreement"
+    },
+    {
+      "id": "sidecar",
+      "group": "guard",
+      "label": "ML sidecar (stand-in)",
+      "sub": "POST /inspect \u2192 findings"
+    },
+    {
+      "id": "decision",
+      "group": "gw",
+      "label": "Decision",
+      "sub": "allow | block"
+    },
+    {
+      "id": "backend",
+      "group": "backend",
+      "label": "MCP door /<app>/mcp",
+      "sub": "published tools"
+    },
+    {
+      "id": "refusal",
+      "group": "refusal",
+      "label": "Refusal",
+      "sub": "401 key \u00b7 403 scope/grant/tool"
+    }
+  ],
+  "edges": [
+    {
+      "source": "agent",
+      "target": "identity",
+      "label": "present the key"
+    },
+    {
+      "source": "identity",
+      "target": "grant",
+      "label": "key ok"
+    },
+    {
+      "source": "identity",
+      "target": "refusal",
+      "label": "unknown/revoked/expired"
+    },
+    {
+      "source": "grant",
+      "target": "guardrail",
+      "label": "app + tool granted"
+    },
+    {
+      "source": "grant",
+      "target": "refusal",
+      "label": "no scope / not granted"
+    },
+    {
+      "source": "guardrail",
+      "target": "sidecar",
+      "label": "inspect request + response"
+    },
+    {
+      "source": "guardrail",
+      "target": "decision",
+      "label": "disabled: skip"
+    },
+    {
+      "source": "sidecar",
+      "target": "decision",
+      "label": "findings vs thresholds"
+    },
+    {
+      "source": "decision",
+      "target": "backend",
+      "label": "allow"
+    },
+    {
+      "source": "decision",
+      "target": "refusal",
+      "label": "block"
+    }
+  ]
+}

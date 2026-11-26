@@ -1,0 +1,30 @@
+# Changelog
+
+## 0.2.0 — AI Guard demo with Agentic Apps and Agent Registry (2026-11-26)
+
+Fork of ai-guard-sidecar-LAB. New:
+
+- **Agentic Apps tab**: mock MCP doors (`/<app>/mcp` route derivation, published tools, edit/delete).
+- **Agent Registry tab**: mock agent access keys (scopes, custodian, allowed apps = the grant, tool filter, per-key guardrail with sidecar URL/timeout/Block Agreement/fail closed), "What Privilege did" grant view, revoke/delete, and "Try a call as a key" walking identity -> grant -> tool filter -> guardrail with the product's refusal wording (UNVERIFIED).
+- New API: /api/apps, /api/keys (+revoke, grant), /api/call.
+- Diagram loads a diagram-studio/1 document from web/src/studio-data (hash-pinned).
+- TopMenu re-vendored from shared (rule 22).
+- New port set: app 7900, range 7900-7909, tests 7930-7979.
+## Unreleased
+
+- Verification mark in the header: the shared `VerifyMark` (vendored byte for byte from AI-DEMO-Standalone `shared/verify-mark`, pinned) shows this lab's Verified / In progress mark from the demo shelf, beside the Shelf link. It makes the same `GET /api/shelf` call the Shelf link makes (including the `X-Workspace-Id` header), so it shows through the lab-proxy and shows nothing when the lab is opened on its own port, when the shelf has no mark for it, or when the shelf is unreachable.
+- Answer the lab-proxy host name (fixes `bad_host` behind the family lab-proxy): `LAB_ALLOWED_HOSTS` (comma separated host names, loopback always works, unset = loopback only, a bad name refuses to start before any server starts) and same-origin writes whose `Origin` equals the proxy's `X-Forwarded-Proto://X-Forwarded-Host`, believed only when `Host` is an allowed name. Compose defaults it to this app's proxy name. `AI_GUARD_PUBLIC_ORIGIN` is unchanged.
+- H2 2026 release updates (Ping release claims, UNVERIFIED on our tenant): a second tab with selectable personal-data kinds (the app's own set of 11, each with a check digit proved live), twelve bundled secret detectors (off by default), your own gitleaks-format rules (one bad rule refuses the whole paste; bounded parser, static regex check, V8 linear-time fallback), and prompt logging sealed to an X25519 key the page holds. Ping's figures are quoted from the deck and never shown as the app's. Release banner and per-field claim tags on both tabs; render guard around each tab; talk track generated with a drift test; content pack gains six terms and three cards. The original behaviour is unchanged by default.
+- Masking: NFKC and default-ignorable/format-character folding, three rounds of percent-decoding, plain-language secrets, mask before truncating; errors no longer echo an unknown field name.
+- No `Non-Human Identity` text exists in this repo, so the Federated Identity display rename changes nothing here.
+
+## Unreleased
+
+- k8s: mock-only SE build (rule 18). `MODE=local` (default) or `MODE=se-mock`: live features (external sidecar URL, standalone sidecar port) are refused at startup and by the doctor; the standalone sidecar and `.env` are not used in se-mock. Per-visitor workspaces (`X-Workspace-Id`, strict id, cap of 50, 30-minute TTL) hold each visitor's gateway config, fault injector, decision log and run queue; the embedded sidecar keeps one state per workspace. `GET /api/info` gives the hosted banner; `/api/health` (`demo-health/1`) reports the mode. Manifests (probes, non-root, read-only root, dropped capabilities, no privileged, no hostPath), `k8s/deploy.sh` (needs `OWNER_APPROVED=1`, nothing deployed), `scripts/k8s.test.mjs`, `docs/k8s.md`. Server tests run one file at a time (`--test-concurrency=1`) so port slices cannot collide.
+
+## 0.1.0
+
+- AG3: packaging. Dockerfile healthcheck; content pack (`content/`, build and validate scripts, copied schema, tests); shelf entry for catalog D12 with the shelf's registry rules copied and tested; README Docker, shelf and pack sections.
+- AG2: fix pass from three reviews. Zero-width and Unicode-tag evasion now caught; spaced SSNs and zero-width-split PII flagged and masked; long unrecognised digit runs hidden in logs; bounded regexes; new reason `alert_only_not_enforcing`; UI contrast, focus and bidi fixes; tests pin the 256 KB reply cap, documented limits, Origin and chunked-body checks, compose `no-new-privileges`; hang-proof and load-tolerant tests.
+- AG1: web UI (React, Vite, React Flow diagram with Simulate, Reset and speed; exact /inspect viewer; live threshold sliders; fail-open vs fail-closed comparison; stand-in limits panel; decision log), served by the server with a same-origin CSP; `exchange` added to each inspected stage; `scripts/e2e.mjs` (Playwright, ports 7901/7904).
+- AG0: server core. Standalone sidecar (`/inspect`, `/health`, demo config and fault endpoints), stand-in injection detector and PII rails (regex with Luhn and mod 97), detector threshold and benign-label calibration, per-category block thresholds, mock gateway with block, allow and fail-closed logic, fault injector (502, timeout, slow), ten scripted scenarios, decision log with PII masking, API, `GET /api/health` (`demo-health/1`), doctor, Dockerfile and loopback-published compose, gitleaks pre-commit hook, docs.

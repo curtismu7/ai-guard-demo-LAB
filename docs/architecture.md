@@ -1,0 +1,50 @@
+# Architecture
+
+```
+client (scenario or custom text)
+   |  POST /api/run
+   v
+mock gateway (server/src/gateway.js, in the main server on 7900)
+   |  request stage:  POST /inspect  { units: [ { role: user_prompt, direction: request, text } ] }
+   v
+sidecar (server/src/sidecar.js; embedded on 7903, or standalone on 7902)  -> { findings: [...] }
+   |
+   |  decision: no findings = allow | finding >= category threshold = block | error = fail-closed toggle
+   v
+upstream stub (canned text; skipped when the request was blocked)
+   |  response stage: POST /inspect  { units: [ { role: assistant_response, direction: response, text } ] }
+   v
+decision log (server/src/decisions.js)
+```
+
+All of this is "as understood from the demo environment, UNVERIFIED against product documentation" (see [safety.md](safety.md)).
+
+## Pieces
+
+- `server/src/sidecar.js`: the HTTP sidecar. `POST /inspect`, `GET /health`, `GET/PUT /demo/config`, `GET/PUT /demo/fault`. It owns the detector threshold, the benign labels, the rails and the fault state. Runs standalone through `server/src/sidecar-main.js` or embedded in the main server.
+- `server/src/detectors.js`: the stand-in rules and the label scoring. A finding is made when a non-benign label scores at or above the threshold. `server/src/pii.js` holds the PII finder and masker.
+- `server/src/gateway.js`: calls the sidecar over loopback HTTP with a timeout, validates the reply, compares each finding's severity with its category's block threshold, and applies the fail-closed toggle on error. Severity order is `low` < `medium` < `high`; a threshold of `none` means alert only.
+- `server/src/scenarios.js`: the scripted scenarios, the two demo callers for the A2A case (a guardrail belongs to the calling agent's key, as the source docs describe it; unverified here) and each run's expected decision.
+- `server/src/service.js`: gateway configuration, the one-at-a-time run queue (cap 4), scenario and custom runs, the fault injector (applied to the sidecar over its `/demo/fault` endpoint and restored after a scenario), reset.
+- `server/src/app.js`: Express app, guards, routes, `startHttpServer()` (starts the embedded sidecar, then the gateway server).
+- `server/src/safety.js`, `sanitize.js`, `redaction.js`: guards, inert text and secret redaction.
+- H2 2026 release additions (Ping release claims, UNVERIFIED on our tenant; see [safety.md](safety.md)): `server/src/pii.js` (selectable kinds with check digits), `secrets.js` (bundled secret detectors), `toml.js`, `safeRegex.js` and `rules.js` (your own gitleaks-format rules, kept in the sidecar's state; `GET/PUT/DELETE /demo/rules`), `fold.js` and `mask.js` (masking of what you type), `seal.js` and `promptlog.js` (prompt logging sealed to your key; the store lives in the service, one per workspace), `h2.js` (the one source of the H2 content: numbers, claim tags, why it matters; served by `GET /api/h2`, and used by the generated talk track and content pack). In the web UI: the "H2 2026 release" tab (`web/src/components/H2Tab.jsx`, `Kinds.jsx`, `Rules.jsx`, `PromptLog.jsx`) and `web/src/lib/seal.js` (opens a record with WebCrypto).
+
+## Why the gateway talks to the sidecar over HTTP even when embedded
+
+The point is to show the wire. The embedded sidecar is a separate Express server on its own loopback port (7903), and the gateway reaches it with `fetch`, so a timeout, a 502 or a malformed reply is a real network event rather than a thrown exception. The same code path serves a standalone sidecar on 7902 (`AI_GUARD_SIDECAR_URL=http://127.0.0.1:7902`).
+
+## Ports
+
+| Port | Use |
+| --- | --- |
+| 7900 | main server (mock gateway and API) |
+| 7902 | standalone sidecar |
+| 7903 | embedded sidecar; 7905-7906 are reserved for stubs |
+| 7907 | Vite dev server (`npm run dev`) |
+| 7901 | end-to-end runs (`npm run e2e`) |
+| 7905-7908 | tests, through a free-port helper; each test file owns a slice |
+
+## Decision record
+
+Each run adds one entry: source (scenario or custom), caller, the policy in force (fail closed, timeout, thresholds), the injected fault if any, and three stages (request, upstream, response). A stage carries the masked unit text, the sidecar call result (status, latency, error kind) and each finding with its threshold and whether it blocks. The outcome carries `blockedAt` (`request`, `response` or null) and a `reason`: `no_findings`, `alert_only_below_threshold`, `alert_only_not_enforcing` (the category is set to never block), `threshold_met`, `sidecar_error_fail_closed` or `sidecar_error_fail_open`.
