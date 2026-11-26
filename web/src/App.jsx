@@ -23,9 +23,12 @@ import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import H2Tab from "./components/H2Tab.jsx";
 import AppsTab from "./components/AppsTab.jsx";
 import RegistryTab from "./components/RegistryTab.jsx";
+import StoryToggle, { storyKey, readView } from "./story/StoryToggle.jsx";
 import { getWorkspaceId } from "./lib/workspace.js";
 
 const THEME_KEY = "ai-guard-theme";
+const STORY_PREFIX = "ai-guard-demo";
+const StoryRoot = React.lazy(() => import("./StoryRoot.jsx"));
 const readTheme = () => {
   try { const t = localStorage.getItem(THEME_KEY); if (t === "dark" || t === "light" || t === "auto") return t; } catch { /* storage blocked */ }
   return "auto";
@@ -57,6 +60,8 @@ export default function App() {
   const [keyring, setKeyring] = useState([]);
   const [apps, setApps] = useState([]);
   const [resetKey, setResetKey] = useState(0);
+  const [storyOn, setStoryOn] = useState(() => readView(STORY_PREFIX) === "story");
+  const [toggleKey, setToggleKey] = useState(0);
   const [showTalk, setShowTalk] = useState(false);
   const saveTimer = useRef(null);
   const latest = useRef({});
@@ -131,7 +136,10 @@ export default function App() {
   const guarded = async (fn) => {
     if (busy) return;
     setBusy(true); setError("");
-    try { await fn(); await refreshDecisions(); } catch (e) { fail(e); } finally { setBusy(false); }
+    window.dispatchEvent(new CustomEvent("aidemo:run-start"));
+    try { await fn(); await refreshDecisions(); window.dispatchEvent(new CustomEvent("aidemo:run-end", { detail: { ok: true } })); }
+    catch (e) { window.dispatchEvent(new CustomEvent("aidemo:run-end", { detail: { ok: false } })); fail(e); }
+    finally { setBusy(false); }
   };
 
   const simulate = () => guarded(async () => {
@@ -157,8 +165,14 @@ export default function App() {
     setResult(null); setCompare(null); setStatus("Reset: defaults restored, no fault, empty log.");
     await loadConfig(); await refreshStandIn(); refreshApps();
     setResetKey((k) => k + 1);
+    window.dispatchEvent(new CustomEvent("aidemo:reset"));
   });
   const doReset = () => { reset(); };
+  const leaveStory = useCallback(() => {
+    try { localStorage.setItem(storyKey(STORY_PREFIX), "demo"); } catch { /* storage blocked */ }
+    try { const u = new URL(window.location.href); if (u.searchParams.has("story")) { u.searchParams.delete("story"); window.history.replaceState(null, "", u); } } catch { /* no address to tidy */ }
+    setStoryOn(false); setToggleKey((k) => k + 1);
+  }, []);
 
   const picked = scenarios.find((s) => s.id === selected);
   const run = result?.runs[activeRun] ?? null;
@@ -192,6 +206,7 @@ export default function App() {
           version={info?.version || null}
           onReset={doReset}
           talkTrack={{ active: showTalk, onToggle: () => setShowTalk((v) => !v) }}
+          extra={<StoryToggle key={toggleKey} prefix={STORY_PREFIX} onChange={setStoryOn} />}
         >
           <ReturnLink app="ai-guard-demo" variant="header" />
           <ShelfLink headers={() => ({ "X-Workspace-Id": getWorkspaceId() })} />
@@ -306,6 +321,11 @@ export default function App() {
           )}
         </section>
       </main>
+      {storyOn ? (
+        <React.Suspense fallback={null}>
+          <StoryRoot mode={info?.source === "real" ? "real" : "mock"} ready={!!info} onExit={leaveStory} prefix={STORY_PREFIX} />
+        </React.Suspense>
+      ) : null}
     </>
   );
 }

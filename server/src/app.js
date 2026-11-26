@@ -13,6 +13,7 @@ import { startSidecar, createSidecarState } from './sidecar.js';
 import { SE_MOCK_BANNER, allowedHostsFrom, modeFrom, publicOriginFrom, refusedFlagsSet } from './config.js';
 import { DEFAULT_WORKSPACE, WORKSPACE_HEADER, WORKSPACE_RE, createWorkspaces } from './workspaces.js';
 import { shelfInfo } from './shelfLink.js';
+import { storyResponse } from './story.js';
 import { RegistryInvalid } from './registry.js';
 
 // Refusal text: the only self-describing one is the missing scope (as understood from the demo environment).
@@ -102,6 +103,9 @@ export function createApp({ service, realService = null, workspaces = null, mode
   api.get('/prompt-log', (req, res) => res.json(req.rt.service.promptLogView()));
   api.put('/prompt-log', wrap(async (req, res) => res.json(await req.rt.service.putPromptLog(req.body))));
   api.get('/stand-in', wrap(async (req, res) => res.json(await req.rt.service.standIn())));
+
+  // Story wording (shared pattern): one file, re-read when it changes, never a server path in the answer.
+  api.get('/story', (req, res) => { const { status, body } = storyResponse(); return res.status(status).json(body); });
 
   // Agent Registry (mock keys) and Agentic Apps (mock MCP doors). In-process, per workspace, reset with the demo.
   const registryRoute = (path, action, { status = 200 } = {}) => wrap(async (req, res) => {

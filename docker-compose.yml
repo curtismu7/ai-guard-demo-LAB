@@ -14,6 +14,10 @@ services:
       AI_GUARD_PORT: "7900"
       AI_GUARD_BIND: 0.0.0.0
       LAB_ALLOWED_HOSTS: ${LAB_ALLOWED_HOSTS:-ai-guard-demo.local.ping-devops.com}
+      # Real mode (owner-set, in this app's own .env beside the compose file, gitignored): an external AI Guard
+      # sidecar the gateway calls over loopback. Unset = Mock only (the toggle is disabled with a how-to).
+      AI_GUARD_SIDECAR_URL: ${AI_GUARD_SIDECAR_URL:-}
+      AI_GUARD_SIDECAR_PORT: ${AI_GUARD_SIDECAR_PORT:-7902}
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]

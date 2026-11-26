@@ -32,6 +32,11 @@ Ports: 7900 app, 7901 Vite dev, 7902 standalone sidecar, 7903 embedded sidecar, 
 - Docker is OrbStack only, never Docker Desktop. Compose publishes `127.0.0.1:7900` only.
 - Mock-issued values are labelled. Product claims about the `/inspect` contract and gateway behaviour are UNVERIFIED unless a source is added; the detector is a stand-in.
 
+## Story mode and Real mode
+
+- Story mode: the shared engine is vendored byte-for-byte from `AI-DEMO-Standalone/shared/story` (commit at the time of vendoring, 2026-11-26) into `web/src/story/` and `server/src/story/`, pinned by `web/src/story/story.sha256` and checked by `scripts/story-checkPin.mjs` (called from `server/test/story.test.js`). NEVER edit a vendored copy: change `shared/story/` first (its own PR), then re-vendor and re-pin. The wording is `story/captions.md` (served at GET /api/story, re-read when it changes); the script is `web/src/storyScript.js`; the glue is `web/src/storyWiring.js` and `web/src/StoryRoot.jsx`; the toggle rides in the TopMenu `extra` slot. The parity test fails the build when the wording and the script disagree. Story works in Mock (sample_* wording, labelled simulated) and Real.
+- Real mode: the Mock/Real toggle calls an external AI Guard sidecar at `AI_GUARD_SIDECAR_URL` (this app's own `.env` beside the compose file, gitignored; `.env.example` names the variables). Unset = Mock only; the toggle is then disabled with a how-to tooltip and POST /api/mode answers 409. The URL must be loopback http (rule: `assertSidecarUrl`); from the container a host sidecar is reachable only if you run the lab from a host checkout or attach a sidecar container to the same Docker network.
+
 ## H2 2026 release additions (Ping release claims, UNVERIFIED on our tenant)
 
 A second tab, "H2 2026 release": selectable personal-data kinds (`pii.js`), bundled secret detectors (`secrets.js`), your own gitleaks-format rules (`toml.js`, `safeRegex.js`, `rules.js`) and prompt logging sealed to a key you hold (`seal.js`, `promptlog.js`, `web/src/lib/seal.js`). `h2.js` is the one source for the banner, the claim tags, Ping's numbers and the why-it-matters text: the API, the generated talk track and the content pack all read it.
