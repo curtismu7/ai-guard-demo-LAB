@@ -35,7 +35,11 @@ export function assertSidecarUrl(value, env = process.env) {
   let u;
   try { u = new URL(String(value)); } catch { throw new Error('sidecar URL is not a valid URL'); }
   if (u.protocol !== 'http:') throw new Error('sidecar URL must be http (loopback, no TLS needed)');
-  if (!isLoopbackHost(u.hostname)) throw new Error('sidecar URL must be a loopback host');
+  const loopback = isLoopbackHost(u.hostname)
+    // host.docker.internal is the host's loopback seen from inside a container; allowed only with the same
+    // explicit owner opt-in as the port relaxation, never by default.
+    || (u.hostname === 'host.docker.internal' && env.AI_GUARD_ALLOW_EXTERNAL_SIDECAR === '1');
+  if (!loopback) throw new Error('sidecar URL must be a loopback host');
   if (u.username || u.password) throw new Error('sidecar URL must not carry credentials');
   // Real mode is owner-run: an external sidecar (the product's own, e.g. the demo environment's on 8086) is allowed
   // with the explicit opt-in AI_GUARD_ALLOW_EXTERNAL_SIDECAR=1. Still loopback http, still no credentials. Default off,

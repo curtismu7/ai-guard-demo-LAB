@@ -35,6 +35,9 @@ test('the gateway may only call an http loopback sidecar inside the port range',
   // The external-sidecar opt-in relaxes ONLY the port check (Real mode, owner-run), never loopback, scheme or credentials.
   assert.equal(assertSidecarUrl('http://127.0.0.1:8086', { AI_GUARD_ALLOW_EXTERNAL_SIDECAR: '1' }), 'http://127.0.0.1:8086');
   for (const u of ['http://example.com:8086', 'https://127.0.0.1:8086', 'http://user:pw@127.0.0.1:8086', 'http://10.0.0.5:8086']) assert.throws(() => assertSidecarUrl(u, { AI_GUARD_ALLOW_EXTERNAL_SIDECAR: '1' }), undefined, u);
+  // host.docker.internal = the host's loopback from a container; allowed only under the same opt-in.
+  assert.equal(assertSidecarUrl('http://host.docker.internal:8086', { AI_GUARD_ALLOW_EXTERNAL_SIDECAR: '1' }), 'http://host.docker.internal:8086');
+  assert.throws(() => assertSidecarUrl('http://host.docker.internal:8086'), undefined, 'opt-in required');
 });
 
 async function guarded() {
