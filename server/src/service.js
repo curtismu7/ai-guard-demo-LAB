@@ -169,8 +169,18 @@ export function createService({ sidecarUrl, fetchImpl, decisions = createDecisio
     },
 
     // The stand-in's documented limits, computed by the live detector with the current sidecar settings.
+    // Real mode talks to an external sidecar that has no /demo admin endpoints: the panel answers honestly
+    // that the stand-in calibration is a Mock-side feature instead of a 503.
     async standIn() {
-      const cfg = (await adminOk('GET', '/demo/config')).config;
+      let cfg;
+      try { cfg = (await adminOk('GET', '/demo/config')).config; }
+      catch {
+        return {
+          engine: 'external-sidecar', realClassifier: true,
+          notice: 'Real mode: findings come from the external sidecar you configured. The stand-in calibration panel (thresholds, benign labels, known limits) is a Mock-side feature and is not available here.',
+          limits: [],
+        };
+      }
       return {
         engine: 'stand-in-heuristics', realClassifier: false,
         notice: 'A deterministic keyword stand-in. It says nothing about the detection quality, defaults or licensing of any real product.',
