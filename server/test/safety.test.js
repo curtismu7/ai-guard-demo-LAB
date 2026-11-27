@@ -32,6 +32,9 @@ test('bind: loopback only unless AI_GUARD_BIND opts in', () => {
 test('the gateway may only call an http loopback sidecar inside the port range', () => {
   assert.equal(assertSidecarUrl('http://127.0.0.1:7902'), 'http://127.0.0.1:7902');
   for (const u of ['http://example.com:7902', 'https://127.0.0.1:7902', 'http://127.0.0.1:8086', 'http://127.0.0.1', 'http://user:pw@127.0.0.1:7902', 'nonsense', 'http://10.0.0.5:7902']) assert.throws(() => assertSidecarUrl(u), undefined, u);
+  // The external-sidecar opt-in relaxes ONLY the port check (Real mode, owner-run), never loopback, scheme or credentials.
+  assert.equal(assertSidecarUrl('http://127.0.0.1:8086', { AI_GUARD_ALLOW_EXTERNAL_SIDECAR: '1' }), 'http://127.0.0.1:8086');
+  for (const u of ['http://example.com:8086', 'https://127.0.0.1:8086', 'http://user:pw@127.0.0.1:8086', 'http://10.0.0.5:8086']) assert.throws(() => assertSidecarUrl(u, { AI_GUARD_ALLOW_EXTERNAL_SIDECAR: '1' }), undefined, u);
 });
 
 async function guarded() {

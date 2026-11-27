@@ -31,13 +31,18 @@ export function assertBindAllowed(host, env = process.env) {
 }
 
 // The sidecar URL the gateway may call. Returns the normalised origin string; throws otherwise.
-export function assertSidecarUrl(value) {
+export function assertSidecarUrl(value, env = process.env) {
   let u;
   try { u = new URL(String(value)); } catch { throw new Error('sidecar URL is not a valid URL'); }
   if (u.protocol !== 'http:') throw new Error('sidecar URL must be http (loopback, no TLS needed)');
   if (!isLoopbackHost(u.hostname)) throw new Error('sidecar URL must be a loopback host');
   if (u.username || u.password) throw new Error('sidecar URL must not carry credentials');
-  if (!portInRange(Number(u.port))) throw new Error(`sidecar URL port must be in ${PORT_MIN}-${PORT_MAX}`);
+  // Real mode is owner-run: an external sidecar (the product's own, e.g. the demo environment's on 8086) is allowed
+  // with the explicit opt-in AI_GUARD_ALLOW_EXTERNAL_SIDECAR=1. Still loopback http, still no credentials. Default off,
+  // so the demo cannot be pointed at stray ports by accident.
+  if (!portInRange(Number(u.port)) && env.AI_GUARD_ALLOW_EXTERNAL_SIDECAR !== '1') {
+    throw new Error(`sidecar URL port must be in ${PORT_MIN}-${PORT_MAX} (or set AI_GUARD_ALLOW_EXTERNAL_SIDECAR=1 to point at an external sidecar)`);
+  }
   return u.origin;
 }
 

@@ -26,7 +26,7 @@ export function runChecks({ env = process.env } = {}) {
     : `server ${ports.server}, standalone sidecar ${ports.sidecar}, embedded sidecar ${ports.embedded} (all within ${PORT_MIN}-${PORT_MAX})`);
 
   if (env.AI_GUARD_SIDECAR_URL && mode !== 'se-mock') {
-    try { assertSidecarUrl(env.AI_GUARD_SIDECAR_URL); add('sidecar-url', 'pass', 'external sidecar URL is http, loopback and in range'); }
+    try { assertSidecarUrl(env.AI_GUARD_SIDECAR_URL, env); add('sidecar-url', 'pass', 'external sidecar URL is http and loopback'); }
     catch (e) { add('sidecar-url', 'fail', e.message); }
   } else add('sidecar-url', 'pass', 'default: an embedded stand-in sidecar on loopback, called over HTTP');
 

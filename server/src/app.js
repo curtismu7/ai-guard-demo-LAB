@@ -197,7 +197,7 @@ export async function startHttpServer({ port = serverPort(), host = bindHost(), 
     if (given) throw new Error('MODE=se-mock builds its own services, one per workspace; a service cannot be supplied');
     return startSeMockServer({ port, host, env, embeddedPort, webDist, publicOrigin, allowedHosts });
   }
-  if (sidecarUrl) assertSidecarUrl(sidecarUrl);
+  if (sidecarUrl) assertSidecarUrl(sidecarUrl, env);
   const embedded = await startSidecar({ port: embeddedPort }); // always: the Mock side
   const mockService = given || createService({ sidecarUrl: embedded.url });
   const realService = sidecarUrl ? createService({ sidecarUrl }) : null;

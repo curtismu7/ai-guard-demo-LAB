@@ -128,7 +128,7 @@ export function decide(call, policy) {
 // workspace (MODE=se-mock only): every call to the sidecar names the visitor's workspace, so the embedded sidecar keeps
 // that visitor's fault and config separate. Omitted in the local demo, where there is one sidecar state.
 export function createGateway({ sidecarUrl, fetchImpl = globalThis.fetch, workspace } = {}) {
-  const base = assertSidecarUrl(sidecarUrl);
+  const base = assertSidecarUrl(sidecarUrl, undefined);
   if (workspace !== undefined && !WORKSPACE_RE.test(workspace)) throw new Error('invalid workspace id');
   const wsHeaders = workspace === undefined ? {} : { [SIDECAR_WORKSPACE_HEADER]: workspace };
   // The visitor's own pasted rules (compiled), so text shown back is masked by them too. Set by the service after a paste.
