@@ -17,6 +17,10 @@ services:
       # Real mode (owner-set, in this app's own .env beside the compose file, gitignored): an external AI Guard
       # sidecar the gateway calls over loopback. Unset = Mock only (the toggle is disabled with a how-to).
       AI_GUARD_SIDECAR_URL: ${AI_GUARD_SIDECAR_URL:-}
+      # Explicit owner opt-in for an external sidecar on any loopback port (see .env.example). Note:
+      # from INSIDE the container, 127.0.0.1 is the container itself — a sidecar on this Mac is only
+      # reachable if it publishes on 0.0.0.0 (not the default) or the lab runs from a host checkout.
+      AI_GUARD_ALLOW_EXTERNAL_SIDECAR: ${AI_GUARD_ALLOW_EXTERNAL_SIDECAR:-}
       AI_GUARD_SIDECAR_PORT: ${AI_GUARD_SIDECAR_PORT:-7902}
     read_only: true
     cap_drop: [ALL]
