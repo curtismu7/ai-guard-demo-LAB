@@ -3,7 +3,7 @@ import React from "react";
 // The simulation banner, first in <main> in every run (UI patterns section 2). It follows /api/info:
 // the hosted mock build (MODE=se-mock) shows the server's own text; a local run says which mode is active and what is simulated.
 export const MOCK_TEXT = "Mock mode: the mock gateway sends text to the embedded stand-in sidecar. The detector is a deterministic keyword stand-in, not a real classifier. No tenant, no network, no credentials.";
-export const REAL_TEXT = "Real mode: the mock gateway sends text to the external sidecar set by AI_GUARD_SIDECAR_URL, and the findings come from that sidecar. The gateway, its thresholds and the scenarios are still this demo's.";
+export const REAL_TEXT = "Real mode: the mock gateway sends text to the external sidecar set by AI_GUARD_SIDECAR_URL, and the findings come from that sidecar. The try-a-call pane also shows a behavioral-risk evaluation from PingOne Protect when the lab is configured for it. The gateway, its keys and the scenarios are still this demo's.";
 
 // Until /api/info answers, or if it fails, info is null and the banner falls back to the local Mock text.
 export default function SimulationBanner({ info }) {

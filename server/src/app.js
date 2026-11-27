@@ -15,6 +15,7 @@ import { DEFAULT_WORKSPACE, WORKSPACE_HEADER, WORKSPACE_RE, createWorkspaces } f
 import { shelfInfo } from './shelfLink.js';
 import { storyResponse } from './story.js';
 import { RegistryInvalid } from './registry.js';
+import { ProtectClient, protectConfig, protectEvaluate } from './protect.js';
 
 // Refusal text: the only self-describing one is the missing scope (as understood from the demo environment).
 const REFUSAL_TEXT = {
@@ -47,6 +48,7 @@ export function createApp({ service, realService = null, workspaces = null, mode
   // Local mode: Mock is the embedded stand-in sidecar; Real is the external sidecar, present only when AI_GUARD_SIDECAR_URL is set.
   // The default is Real when it exists (as before), else Mock. The hosted build is Mock only and cannot be switched.
   const modeState = { source: realService ? 'real' : 'mock' };
+  const protectClient = protectConfig() ? new ProtectClient(protectConfig()) : null;
   const registry = workspaces ?? { get: () => ({ service: modeState.source === 'real' ? realService : service }) };
   const app = express();
   app.disable('x-powered-by');
@@ -135,9 +137,13 @@ export function createApp({ service, realService = null, workspaces = null, mode
     }
     const d = req.rt.service.registry.accessDecision(b);
     if (!d.allowed) return res.status(d.status).json({ error: d.reason, message: REFUSAL_TEXT[d.reason] ?? d.reason });
+    // Behavioral risk from PingOne Protect (optional, real, informs only — never the verdict).
+    const protect = await protectEvaluate(protectClient, {
+      ip: req.ip, userAgent: req.headers['user-agent'],       userId: d.key?.custodian ?? b.keyName,
+    });
     const run = { label: `${b.keyName} -> ${b.appName}.${b.tool}`, requestText: b.tool, requestRole: 'mcp_tool_call', upstreamText: '', caller: null, failClosed: d.guardrail.failClosed, timeoutMs: d.guardrail.timeoutMs || undefined, policy: { blockThresholds: GATEWAY_THRESHOLDS, forceInspect: d.guardrail.enabled } };
     const result = await req.rt.service.runPolicy(run);
-    return res.json({ access: { allowed: true, reason: d.reason, key: b.keyName, app: b.appName, tool: b.tool }, guardrail: { enabled: d.guardrail.enabled, blockAgreement: d.guardrail.blockAgreement, failClosed: d.guardrail.failClosed, timeoutMs: d.guardrail.timeoutMs }, run: result.runs[0] });
+    return res.json({ access: { allowed: true, reason: d.reason, key: b.keyName, app: b.appName, tool: b.tool }, guardrail: { enabled: d.guardrail.enabled, blockAgreement: d.guardrail.blockAgreement, failClosed: d.guardrail.failClosed, timeoutMs: d.guardrail.timeoutMs }, run: result.runs[0], ...(protect ? { protect } : {}) });
   }));
 
   // Body: { scenario: "<id>" } or { custom: { requestText, upstreamText?, caller?, failClosed?, timeoutMs? } }

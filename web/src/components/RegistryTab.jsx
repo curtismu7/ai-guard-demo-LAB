@@ -193,7 +193,10 @@ export default function RegistryTab({ apps, onAppsChanged, onRan, resetKey }) {
               : (
                 <>
                   <p className="recorded">Access <strong className="verdict v-allow">ALLOWED</strong> · guardrail decision <strong className={`verdict v-${callResult.run.outcome === "block" ? "block" : "allow"}`}>{callResult.run.outcome === "block" ? `BLOCK at ${callResult.run.blockedAt}` : "ALLOW"}</strong></p>
-                  <JsonPane value={{ access: callResult.access, guardrail: callResult.guardrail, decision: callResult.run }} hot={["outcome", "reason", "blockedAt"]} />
+                  {callResult.protect && (
+                    <p className="recorded" data-testid="protect-row">Behavioral risk (PingOne Protect) <strong className={`verdict v-${String(callResult.protect.riskLevel).toLowerCase() === "low" ? "allow" : "block"}`}>{callResult.protect.riskLevel}</strong>{callResult.protect.recommendedAction ? <> · action <strong>{callResult.protect.recommendedAction}</strong></> : null}{callResult.protect.reasons?.length ? <> · {callResult.protect.reasons.length} reason{callResult.protect.reasons.length === 1 ? "" : "s"}</> : null}</p>
+                  )}
+                  <JsonPane value={{ access: callResult.access, guardrail: callResult.guardrail, ...(callResult.protect ? { protect: callResult.protect } : {}), decision: callResult.run }} hot={["outcome", "reason", "blockedAt", "riskLevel"]} />
                 </>
               )}
           </section>

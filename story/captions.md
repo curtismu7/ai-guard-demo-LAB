@@ -228,7 +228,7 @@ Pick a key, an app and a tool. The registry decides access first: identity, then
 Permitted, then screened
 
 ## Text
-payments-agent calling banking.get_my_accounts is permitted. The key's own guardrail then screens the call text with the same sidecar contract.
+payments-agent calling banking.get_my_accounts is permitted. The key's own guardrail then screens the call text with the same sidecar contract, and a behavioral-risk evaluation from PingOne Protect rides along as a second, real signal — it informs, it never decides.
 
 ---
 
