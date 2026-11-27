@@ -163,29 +163,31 @@ export default function RegistryTab({ apps, onAppsChanged, onRan, resetKey }) {
         </section>
       )}
 
-      <section className="card" aria-labelledby="call-h" data-testid="call-card">
-        <div className="card-head"><h2 id="call-h">Try a call as a key</h2></div>
-        <p>Pick a key, an app and a tool. The registry decides access (identity → grant → tool filter), then the key&apos;s own guardrail screens the call text. Use a prompt-injection phrase to see the guardrail block even an allowed call.</p>
-        <form onSubmit={tryCall} className="call-form">
-          <label htmlFor="call-key">Key</label>
-          <select id="call-key" value={call.keyName} onChange={(e) => setCall({ ...call, keyName: e.target.value })} required>
-            <option value="">Choose…</option>
-            {keys.filter((k) => !k.revoked).map((k) => <option key={k.id} value={k.name}>{k.name}</option>)}
-          </select>
-          <label htmlFor="call-app">App</label>
-          <select id="call-app" value={call.appName} onChange={(e) => setCall({ ...call, appName: e.target.value, tool: "" })} required>
-            <option value="">Choose…</option>
-            {apps.map((a) => <option key={a.id} value={a.name}>{a.name}</option>)}
-          </select>
-          <label htmlFor="call-tool">Tool</label>
-          <select id="call-tool" value={call.tool} onChange={(e) => setCall({ ...call, tool: e.target.value })} required>
-            <option value="">Choose…</option>
-            {(apps.find((a) => a.name === call.appName)?.tools ?? []).map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
-          <div className="row"><button type="submit" className="btn primary" disabled={!call.keyName || !call.appName || !call.tool}>Send the call</button></div>
-        </form>
+      <div className="grid two" data-testid="call-grid">
+        <section className="card" aria-labelledby="call-h" data-testid="call-card">
+          <div className="card-head"><h2 id="call-h">Try a call as a key</h2></div>
+          <p>Pick a key, an app and a tool. The registry decides access (identity → grant → tool filter), then the key&apos;s own guardrail screens the call text. Use a prompt-injection phrase to see the guardrail block even an allowed call.</p>
+          <form onSubmit={tryCall} className="call-form">
+            <label htmlFor="call-key">Key</label>
+            <select id="call-key" value={call.keyName} onChange={(e) => setCall({ ...call, keyName: e.target.value })} required>
+              <option value="">Choose…</option>
+              {keys.filter((k) => !k.revoked).map((k) => <option key={k.id} value={k.name}>{k.name}</option>)}
+            </select>
+            <label htmlFor="call-app">App</label>
+            <select id="call-app" value={call.appName} onChange={(e) => setCall({ ...call, appName: e.target.value, tool: "" })} required>
+              <option value="">Choose…</option>
+              {apps.map((a) => <option key={a.id} value={a.name}>{a.name}</option>)}
+            </select>
+            <label htmlFor="call-tool">Tool</label>
+            <select id="call-tool" value={call.tool} onChange={(e) => setCall({ ...call, tool: e.target.value })} required>
+              <option value="">Choose…</option>
+              {(apps.find((a) => a.name === call.appName)?.tools ?? []).map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <div className="row"><button type="submit" className="btn primary" disabled={!call.keyName || !call.appName || !call.tool}>Send the call</button></div>
+          </form>
+        </section>
         {callResult && (
-          <div data-testid="call-result">
+          <section className="card" data-testid="call-result">
             {callResult.refused
               ? <p className="recorded">recorded decision <strong className="verdict v-block">REFUSED</strong> — {callResult.message}</p>
               : (
@@ -194,9 +196,9 @@ export default function RegistryTab({ apps, onAppsChanged, onRan, resetKey }) {
                   <JsonPane value={{ access: callResult.access, guardrail: callResult.guardrail, decision: callResult.run }} hot={["outcome", "reason", "blockedAt"]} />
                 </>
               )}
-          </div>
+          </section>
         )}
-      </section>
+      </div>
     </div>
   );
 }
