@@ -5,7 +5,7 @@ import { REASON_TEXT } from "../lib/model.js";
 const MODES = [["none", "None"], ["error", "502 error"], ["timeout", "Timeout"], ["slow", "Slow"]];
 
 // Fail Closed toggle, fault injector, and the side-by-side comparison from the outage scenario.
-export default function Outage({ failClosed, onFailClosed, fault, onFault, compare, onCompare, busy }) {
+export default function Outage({ failClosed, onFailClosed, fault, onFault, compare, onCompare, busy, sanitizeMode = "off", onSanitizeMode }) {
   return (
     <section aria-labelledby="out-h" className="card">
       <div className="card-head">
@@ -18,6 +18,14 @@ export default function Outage({ failClosed, onFailClosed, fault, onFault, compa
         </label>
       </div>
       <p className="fine">{failClosed ? "On: if the sidecar errors or times out, the gateway blocks. Safe, but an outage stops all traffic." : "Off: if the sidecar errors or times out, the gateway allows. Available, but unchecked, so attacks pass."}</p>
+      <div className="row">
+        <label htmlFor="sanitize-mode">Sanitize (the deck's fourth outcome):</label>{" "}
+        <select id="sanitize-mode" data-testid="sanitize-mode" value={sanitizeMode} onChange={(e) => onSanitizeMode?.(e.target.value)}>
+          <option value="off">Off — findings alert only</option>
+          <option value="on">On — mask findings and forward</option>
+        </select>
+      </div>
+      <p className="fine" data-testid="sanitize-state">{sanitizeMode === "on" ? "On: a request with findings that do not block is forwarded with the offending text masked, and the run records SANITIZE." : "Off: findings that do not block only raise an alert; the text is forwarded unchanged. Switch on to model the deck's fourth outcome."}</p>
       <fieldset className="fault">
         <legend>Fault injector (applies to the sidecar for every run)</legend>
         <div className="radios">
