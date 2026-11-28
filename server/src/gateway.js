@@ -1,5 +1,5 @@
 // The MOCK GATEWAY. It stands in for the real agent gateway so the sidecar contract can be taught offline.
-// Behaviour implemented here is AS UNDERSTOOD FROM THE DEMO ENVIRONMENT, UNVERIFIED against product documentation:
+// Behaviour implemented here is AS UNDERSTOOD FROM THE DEMO ENVIRONMENT, not checked against product documentation:
 //   - the gateway POSTs the text units of a request or response to the sidecar's /inspect;
 //   - an empty findings list means allow;
 //   - a finding at or above its category's block threshold makes the gateway block;

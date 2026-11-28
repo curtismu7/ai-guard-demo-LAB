@@ -95,13 +95,12 @@ describe("App", () => {
     INFO = { mode: "local", hosted: false, banner: null };
   });
 
-  it("shows the DEMO, STAND-IN and UNVERIFIED badges and the provenance text", async () => {
+  it("shows the DEMO and STAND-IN badges and the provenance text", async () => {
     await ready();
     const badges = screen.getByTestId("mode-badge");
     expect(within(badges).getByText("DEMO")).toBeInTheDocument();
     expect(within(badges).getByText("STAND-IN")).toBeInTheDocument();
-    expect(within(badges).getByText("UNVERIFIED")).toBeInTheDocument();
-    expect(screen.getAllByText(/UNVERIFIED against product documentation/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/as understood from the demo environment/).length).toBeGreaterThan(0);
   });
 
   it("offers only Mock when no external sidecar is configured, and says how to enable Real", async () => {

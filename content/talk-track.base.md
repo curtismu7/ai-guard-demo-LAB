@@ -24,7 +24,7 @@ Setup: `npm run build && npm start`, open `http://127.0.0.1:7900/`. Run the rese
 ## If asked, say this
 
 - **What is simulated:** the gateway, the upstream, the sidecar and the detector. No network, no real tenant, no model.
-- **UNVERIFIED:** the `/inspect` request and response shapes and the gateway behaviour are as understood from a demo environment and are UNVERIFIED against product documentation. Check the docs before relying on any detail.
+- **NOT CHECKED:** the `/inspect` request and response shapes and the gateway behaviour are as understood from a demo environment and are not checked against product documentation. Check the docs before relying on any detail.
 - **What this does not prove:** nothing about real detection quality, defaults, thresholds, severities or licensing. The detector is a fixed list of keyword and pattern rules, not a model. The role names `assistant_response` and `a2a_message` are this demo's own choice.
 
 ## Likely questions

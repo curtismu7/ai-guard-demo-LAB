@@ -33,7 +33,7 @@ An agent presents a registry key, the grant decides what it may reach, and a per
 - One place to see the verdict, and the refusals
 
 ## Verdict
-Everything here is simulated: a stand-in detector, a mock gateway and mock keys. The contract is as understood from the demo environment, UNVERIFIED against product documentation.
+Everything here is simulated: a stand-in detector, a mock gateway and mock keys. The contract is as understood from the demo environment, not checked against product documentation.
 
 ---
 
@@ -268,7 +268,7 @@ Identity (the key), authorisation (the grant) and screening (the per-key guardra
 ## Column B: What is simulated
 - The detector is a keyword stand-in, not a model
 - The keys and apps are mock data; nothing is sent anywhere
-- The contract is UNVERIFIED against product documentation
+- The contract is not checked against product documentation
 
 ## Verdict
 Detection quality, defaults and licensing are properties of the real product, not of this demo.

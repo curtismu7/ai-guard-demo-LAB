@@ -1,5 +1,5 @@
 import React from "react";
-import { StandIn, Unverified } from "./Badges.jsx";
+import { StandIn } from "./Badges.jsx";
 import { REASON_TEXT } from "../lib/model.js";
 
 const MODES = [["none", "None"], ["error", "502 error"], ["timeout", "Timeout"], ["slow", "Slow"]];
@@ -10,7 +10,6 @@ export default function Outage({ failClosed, onFailClosed, fault, onFault, compa
     <section aria-labelledby="out-h" className="card">
       <div className="card-head">
         <h2 id="out-h">When the sidecar fails</h2>
-        <span className="badges"><Unverified /></span>
       </div>
       <div className="row">
         <label className="switch">

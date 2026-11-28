@@ -21,16 +21,16 @@ test('the validator rejects a broken pack', () => {
   assert.ok(validatePack(pack).length >= 2);
 });
 
-test('the pack covers the app and keeps the UNVERIFIED and STAND-IN statements', () => {
+test('the pack covers the app and keeps the not-checked and STAND-IN statements', () => {
   const pack = buildPack();
   for (const id of ['ai-guard-demo', 'inspect-contract', 'findings', 'block-threshold', 'fail-closed', 'stand-in-detector', 'pii-rail', 'response-scanning', 'per-key-guardrail', 'unverified', 'inert-text']) assert.ok(pack.glossary.some((g) => g.id === id), id);
   assert.deepEqual(pack.sources, []);
   assert.equal(pack.demo.baseUrl, 'http://localhost:7900');
   assert.equal(pack.demo.catalog, 'D12');
   const text = JSON.stringify(pack);
-  assert.match(text, /UNVERIFIED against product documentation/);
+  assert.match(text, /not checked against product documentation/);
   assert.match(pack.glossary.find((g) => g.id === 'stand-in-detector').definition, /no claim about real product detection quality, defaults or licensing/);
-  assert.match(pack.glossary.find((g) => g.id === 'inspect-contract').definition, /UNVERIFIED/);
+  assert.match(pack.glossary.find((g) => g.id === 'inspect-contract').definition, /not checked against product documentation/);
 });
 
 test('every story says exactly what the UI story strip says', () => {
@@ -43,14 +43,14 @@ test('a commit is recorded only when passed', () => {
   assert.equal(buildPack({ commit: 'abc1234' }).source.commit, 'abc1234');
 });
 
-test('the H2 2026 terms and cards are in the pack, every one says it is a Ping release claim UNVERIFIED on our tenant, and Ping\'s numbers are Ping\'s', () => {
+test('the H2 2026 terms and cards are in the pack, every one says it is a Ping release claim not checked on our tenant, and Ping\'s numbers are Ping\'s', () => {
   const pack = buildPack();
   for (const id of ['ping-release-numbers', 'personal-data-kinds', 'own-rules', 'prompt-logging-sealed', 'why-aiguard', 'why-prompt-logging']) {
     const g = pack.glossary.find((x) => x.id === id);
     assert.ok(g, id);
-    assert.match(g.definition, /UNVERIFIED on our tenant/, id);
+    assert.match(g.definition, /not checked on our tenant/, id);
   }
-  for (const id of ['h2-kinds', 'h2-rules', 'h2-prompt-logging']) assert.match(pack.cards.find((c) => c.id === id).description, /UNVERIFIED on our tenant/, id);
+  for (const id of ['h2-kinds', 'h2-rules', 'h2-prompt-logging']) assert.match(pack.cards.find((c) => c.id === id).description, /not checked on our tenant/, id);
   const numbers = pack.glossary.find((x) => x.id === 'ping-release-numbers').definition;
   assert.match(numbers, /Ping's deck \(slide 53\) says 23 personal-data kinds.*364.*47.*411/);
   assert.match(numbers, /not measured by us/);

@@ -1,5 +1,5 @@
 // The Agent Registry: mock agent access keys (Privilege-style, as understood from the demo environment,
-// UNVERIFIED against product documentation) and the Agentic Apps (MCP doors) they may be granted to.
+// not checked against product documentation) and the Agentic Apps (MCP doors) they may be granted to.
 // Everything here is mock data, in-process, per workspace, reset by the demo Reset. No real tenant.
 // Names are demo-invented; they follow no tenant and carry no credential.
 import { randomUUID } from 'node:crypto';

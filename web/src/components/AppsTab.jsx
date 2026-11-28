@@ -1,5 +1,5 @@
 // The Agentic Apps tab: mock MCP "doors" the gateway routes to at /<app>/mcp.
-// Everything is simulated; the route derivation follows the demo environment, UNVERIFIED.
+// Everything is simulated; the route derivation follows the demo environment and is not checked against product documentation.
 import React, { useState } from "react";
 import * as api from "../lib/api.js";
 import Inert from "./Inert.jsx";
@@ -44,7 +44,7 @@ export default function AppsTab({ apps, onAppsChanged, resetKey }) {
   return (
     <div data-testid="apps-tab">
       <p className="lede">Agentic Apps are the gateway&apos;s doors: one application per backend MCP server, with the client route derived from the application name — <code>/&lt;application-name&gt;/mcp</code>. An app created outside the proper wizard gets no working route; publishing alone configures nothing that runs.</p>
-      <p role="note" className="fine">Simulated. Route derivation and app semantics are as understood from the demo environment, UNVERIFIED against product documentation. URLs must use .invalid or .example hosts; nothing here contacts any backend.</p>
+      <p role="note" className="fine">Simulated. Route derivation and app semantics are as understood from the demo environment, not checked against product documentation. URLs must use .invalid or .example hosts; nothing here contacts any backend.</p>
       {error && <p role="alert" className="error">{error}</p>}
       <p className="sr-only" role="status" aria-live="polite">{status}</p>
 

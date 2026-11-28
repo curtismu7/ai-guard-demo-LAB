@@ -24,7 +24,7 @@ export function h2Section() {
   const num = (n) => `| ${cell(n.label)} | ${n.ping} (${TAG(h, n.pingTag)})${n.pingNote ? `, ${cell(n.pingNote)}` : ''} | ${n.app === null ? cell(n.appNote) : `${n.app} (${TAG(h, n.appTag)}), ${cell(n.appNote)}`} |`;
   const aiguard = h.whyItMatters.find((w) => w.id === 'aiguard');
   const lines = [
-    '## H2 2026 release: data protection (Ping release claims, UNVERIFIED on our tenant)',
+    '## H2 2026 release: data protection (Ping release claims, not checked on our tenant)',
     '',
     `Open the **H2 2026 release** tab. The banner **${h.banner}** is on both tabs: the release (dated 2026-11-02) is not on our tenant, so every product claim here is Ping's, from its deck "ID4AI Workforce - H2 2026", slides 50 and 53. The app's own engine is a small teaching model; its counts are its own and are never Ping's.`,
     '',
@@ -50,7 +50,7 @@ export function h2Section() {
     '| --- | --- | --- |',
     ...h.fields.map((f) => `| ${cell(f.field)} | ${TAG(h, f.tag)} | ${cell(f.note)} |`),
     '',
-    '### Why it matters (Ping claims, UNVERIFIED on our tenant)',
+    '### Why it matters (Ping claims, not checked on our tenant)',
     '',
     ...h.whyItMatters.flatMap((w) => [`**${w.title}**`, '', `- Challenge: ${w.challenge}`, `- Technical: ${w.technical}`, `- Business: ${w.business}`, '']),
     '### Cut on purpose',

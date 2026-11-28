@@ -19,7 +19,7 @@ export default function ReleaseNotes({ version, onClose }) {
           <li><strong>Real mode maturity.</strong> Decode / Trace and the Profile checker talk to the one configured issuer (PingOne or PingFederate): client_credentials token, real JWKS signature verification, RFC 7662 introspection, metadata profile check, full request trace with the client secret scrubbed.</li>
           <li><strong>Mock/Real toggle</strong> in the header, no restart. Real is owner opt-in and net-guarded: in Mock nothing leaves loopback, in Real only the issuer's origin is reachable.</li>
           <li><strong>Wrong-token tester.</strong> Fifteen cases, each wrong in one way, against a stub MCP-style resource server, with the expected <code>WWW-Authenticate</code> challenge compared to the actual answer.</li>
-          <li><strong>OAuth profile checker.</strong> RFC 9700 BCP pack and a simplified (UNVERIFIED) FAPI 2.0 pack, with evidence per rule and honest NOT CHECKED cards for active-probe rules.</li>
+          <li><strong>OAuth profile checker.</strong> RFC 9700 BCP pack and a simplified (not checked against the spec) FAPI 2.0 pack, with evidence per rule and honest NOT CHECKED cards for active-probe rules.</li>
           <li><strong>Token-flow catalog.</strong> PKCE, PAR, RAR, DPoP, mTLS and JAR, each simulated with and without its protection against the one attack it stops.</li>
           <li><strong>Widened page frame</strong> (2200&nbsp;px) and the shared lab top menu.</li>
         </ul>

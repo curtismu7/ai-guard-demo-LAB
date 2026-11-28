@@ -96,7 +96,7 @@ export function createApp({ service, realService = null, workspaces = null, mode
   });
 
   api.get('/scenarios', (req, res) => res.json({
-    provenance: 'The sidecar contract and gateway behaviour are as understood from the demo environment (reverse-engineered), UNVERIFIED against product documentation.',
+    provenance: 'The sidecar contract and gateway behaviour are as understood from the demo environment (reverse-engineered), not checked against product documentation.',
     scenarios: req.rt.service.listScenarios(),
   }));
   api.get('/h2', wrap(async (req, res) => res.json(await req.rt.service.h2())));

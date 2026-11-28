@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Background, Controls, Handle, MarkerType, Position, ReactFlow, applyNodeChanges } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { StandIn, Unverified } from "./Badges.jsx";
+import { StandIn } from "./Badges.jsx";
 
 // Studio diagram (rule 17): nodes and edges come from the diagram-studio/1 document in web/src/studio-data/
 // (loaded by name below, hash-pinned; the studio has no AI-guard diagram yet, so the flow is lab-local, like cedar-in-privilege).
@@ -112,7 +112,7 @@ export default function Diagram({ steps, runKey, theme, onSimulate, onReset, bus
     <section aria-labelledby="diagram-h" className="card diagram-card">
       <div className="card-head">
         <h2 id="diagram-h">How the check flows</h2>
-        <span className="badges"><StandIn /><Unverified /></span>
+        <span className="badges"><StandIn /></span>
       </div>
       <div className="controls" role="group" aria-label="Diagram controls">
         <button type="button" className="btn primary" onClick={onSimulate} disabled={busy || !canSimulate}>{busy ? "Running..." : "Simulate"}</button>

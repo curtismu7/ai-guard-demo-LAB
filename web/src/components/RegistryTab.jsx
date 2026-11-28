@@ -1,5 +1,5 @@
 // The Agent Registry tab: mock agent access keys with their scopes, grants and per-key guardrail.
-// Everything is simulated; the naming and refusal wording follow the demo environment, UNVERIFIED.
+// Everything is simulated; the naming and refusal wording follow the demo environment and are not checked against product documentation.
 import React, { useEffect, useState } from "react";
 import * as api from "../lib/api.js";
 import JsonPane from "./JsonPane.jsx";
@@ -120,7 +120,7 @@ export default function RegistryTab({ apps, onAppsChanged, onRan, resetKey }) {
   return (
     <div data-testid="registry-tab">
       <p className="lede">The Agent Registry: one access key <em>is</em> the agent&apos;s whole identity — scopes, allowed apps (the grant), rate caps and its own guardrail all hang off it. The agent holds a virtual key only; the real upstream credential, if any, stays server-side.</p>
-      <p role="note" className="fine">Simulated. Key shape, scopes, grant semantics and refusal wording are as understood from the demo environment, UNVERIFIED against product documentation. Keys are mock-issued and labelled <code>vk-mock-…</code>; they are never real credentials.</p>
+      <p role="note" className="fine">Simulated. Key shape, scopes, grant semantics and refusal wording are as understood from the demo environment, not checked against product documentation. Keys are mock-issued and labelled <code>vk-mock-…</code>; they are never real credentials.</p>
       {error && <p role="alert" className="error">{error}</p>}
       <p className="sr-only" role="status" aria-live="polite">{status}</p>
 

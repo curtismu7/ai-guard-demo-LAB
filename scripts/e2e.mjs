@@ -55,8 +55,8 @@ try {
   await page.goto(`${base}/`);
   await page.getByTestId('mode-badge').waitFor();
   const badge = await page.getByTestId('mode-badge').innerText();
-  check(/DEMO/.test(badge) && /STAND-IN/.test(badge) && /UNVERIFIED/.test(badge), 'header shows DEMO, STAND-IN and UNVERIFIED badges');
-  check((await page.locator('.badge-warn').count()) >= 6 && (await page.locator('.badge-info').count()) >= 5, 'UNVERIFIED and STAND-IN badges sit beside the diagram, exchange, findings, thresholds and outage panels');
+  check(/DEMO/.test(badge) && /STAND-IN/.test(badge), 'header shows DEMO and STAND-IN badges');
+  check((await page.locator('.badge-info').count()) >= 5, 'STAND-IN badges sit beside the diagram, exchange, findings, thresholds and outage panels');
   const csp = (await fetch(`${base}/`)).headers.get('content-security-policy');
   check(/default-src 'self'/.test(csp) && !/unsafe-eval/.test(csp), 'the UI page carries a same-origin CSP');
   await page.getByLabel('Prompt sent by the client').waitFor();
@@ -227,10 +227,10 @@ try {
   await sleep(300);
   await shot('7-light');
 
-  // H2 2026 release tab (Ping release claims, UNVERIFIED on our tenant).
+  // H2 2026 release tab (Ping release claims, not checked on our tenant).
   await page.getByTestId('tab-h2').click();
   await page.getByTestId('numbers').waitFor();
-  check((await page.getByTestId('release-banner').innerText()) === 'Ping release claim, UNVERIFIED on our tenant', 'the release banner is on the H2 tab');
+  check((await page.getByTestId('release-banner').innerText()) === 'Ping release claims, not checked on our tenant', 'the release banner is on the H2 tab');
   const h2 = await (await fetch(`${base}/api/h2`)).json();
   const kindRow = await page.getByTestId('num-pii-kinds').innerText();
   check(kindRow.includes('23') && kindRow.includes(String(h2.kinds.length)) && /deck claim/.test(kindRow), 'Ping\'s 23 sits beside the app\'s own computed count, tagged');

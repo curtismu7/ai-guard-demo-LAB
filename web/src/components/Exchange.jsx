@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Json from "./JsonPane.jsx";
-import { StandIn, Unverified } from "./Badges.jsx";
+import { StandIn } from "./Badges.jsx";
 
 function Pane({ title, sub, value, hot }) {
   return (
@@ -44,7 +44,7 @@ export default function Exchange({ run }) {
     <section aria-labelledby="ex-h" className="card">
       <div className="card-head">
         <h2 id="ex-h">The /inspect exchange</h2>
-        <span className="badges"><Unverified /><StandIn /></span>
+        <span className="badges"><StandIn /></span>
       </div>
       {!stages.length ? <p className="empty">Run a scenario to see the exact request the gateway sends and the answer it gets back.</p> : stages.map((st) => <StageRow key={st.stage} stage={st} />)}
       {stages.length > 0 && <p className="fine">Shown with PII masked and secret-looking strings redacted, and long text cut at 300 characters. Hidden characters appear as <code>[U+200B]</code> style escapes. An empty findings list means allow. Expand a stage to read it as a Form or as the exact JSON (the buttons above it); neither scrolls.</p>}

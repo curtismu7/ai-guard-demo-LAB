@@ -16,7 +16,7 @@ setting: `MODE=se-mock`. Nothing here has been deployed. The first deploy to the
   characters) for that request only. It is never the shared `default`, so two no-id callers cannot see or change each
   other's state. Because each no-id request is a new workspace, a no-id caller cannot keep state across requests; send
   an id to keep it.
-- The detector is still the deterministic stand-in. The contract and gateway behaviour are still UNVERIFIED against
+- The detector is still the deterministic stand-in. The contract and gateway behaviour are still not checked against
   product documentation.
 
 ## What is compiled out or refused
