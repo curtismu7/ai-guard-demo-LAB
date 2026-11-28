@@ -19,9 +19,9 @@ Setup: `npm run build && npm start`, open `http://127.0.0.1:7900/`. Run the rese
 9. **What the stand-in misses.** In "What the stand-in misses" click **Try this text** on each example. Say: "A paraphrase gets through and a harmless sentence is blocked. Real classifiers have their own errors; this shows the trade-off."
 10. **Close.** Show the "Decision log" and say: "Every decision, masked, in memory only."
 
-## H2 2026 release: data protection (Ping release claims, UNVERIFIED on our tenant)
+## H2 2026 release: data protection (Ping release claims, not checked on our tenant)
 
-Open the **H2 2026 release** tab. The banner **Ping release claim, UNVERIFIED on our tenant** is on both tabs: the release (dated 2026-11-02) is not on our tenant, so every product claim here is Ping's, from its deck "ID4AI Workforce - H2 2026", slides 50 and 53. The app's own engine is a small teaching model; its counts are its own and are never Ping's.
+Open the **H2 2026 release** tab. The banner **Ping release claims, not checked on our tenant** is on both tabs: the release (dated 2026-11-02) is not on our tenant, so every product claim here is Ping's, from its deck "ID4AI Workforce - H2 2026", slides 50 and 53. The app's own engine is a small teaching model; its counts are its own and are never Ping's.
 
 Say the challenge first (a Ping claim): "Authorization cannot see content: an agent following hidden instructions can exfiltrate data within policy."
 
@@ -52,7 +52,7 @@ The app's own sets, from its engine: 11 personal-data kinds (card, ssn, iban, ab
 | the check digit for each numeric kind | lab reading | A reading of public formats (Luhn, mod 97, mod 11, mod 23, a 3-7-1 weighted sum). Not a claim about Ping's validators. |
 | ID, Description, Category, Severity, Keywords, Pattern, Entropy, Allowlist, ValueGroup | console swagger name (schema only) | Field names of modelAIGuardCustomRule in the console swagger. A name proves a field exists, not how it behaves. |
 | the TOML keys: id, description, regex, keywords, entropy, secretGroup, category, severity, [rules.allowlist].regexes | lab reading | A reading of the gitleaks rule format. Pattern source is the standard "your own formats paste in unchanged" (deck slide 53) as the app understands it. |
-| one bad rule refuses the whole paste | lab reading | The console swagger's description of imodelAIGuardRuleImport says so; how the product behaves is unverified. |
+| one bad rule refuses the whole paste | lab reading | The console swagger's description of imodelAIGuardRuleImport says so; how the product behaves is not checked. |
 | the category names a pasted rule may use, and what the gateway does with them | lab-invented | The gateway here has sliders only for prompt_injection, jailbreak and pii. Any other category (secrets, data_exfiltration, malicious_content) blocks at high, the demo's existing rule for a category it does not know, so the rule's Severity decides. |
 | the caps on a paste (size, lines, rules, matches) | lab-invented | Limits chosen for a safe local demo. |
 | 23 kinds, 364 secret detectors, 47 behavioural rules, 411 rules | deck claim | Ping's figures from slide 53, uncited in the deck. Shown only in the "Ping says" column. |
@@ -64,7 +64,7 @@ The app's own sets, from its engine: 11 personal-data kinds (card, ssn, iban, ab
 | the sealed-record envelope (X25519 + HKDF-SHA256 + AES-256-GCM), the surfaces this app produces, caps, the ring of 100 records | lab-invented | The product's format is not public. The envelope is this app's own and is shown so the round trip can be proved. |
 | anything measured on our tenant | measured (our note) | Nothing. The release is not on our tenant; nothing here has been measured. |
 
-### Why it matters (Ping claims, UNVERIFIED on our tenant)
+### Why it matters (Ping claims, not checked on our tenant)
 
 **AIGuard (deck slide 53)**
 
@@ -85,7 +85,7 @@ The deck's "sanitize" outcome (redact the offending span and forward the rest) i
 ## If asked, say this
 
 - **What is simulated:** the gateway, the upstream, the sidecar and the detector. No network, no real tenant, no model.
-- **UNVERIFIED:** the `/inspect` request and response shapes and the gateway behaviour are as understood from a demo environment and are UNVERIFIED against product documentation. Check the docs before relying on any detail.
+- **NOT CHECKED:** the `/inspect` request and response shapes and the gateway behaviour are as understood from a demo environment and are not checked against product documentation. Check the docs before relying on any detail.
 - **What this does not prove:** nothing about real detection quality, defaults, thresholds, severities or licensing. The detector is a fixed list of keyword and pattern rules, not a model. The role names `assistant_response` and `a2a_message` are this demo's own choice.
 
 ## Likely questions

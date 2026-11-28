@@ -25,10 +25,10 @@ test('every npm script and source file the docs name exists', () => {
 
 test('the docs carry the provenance statement and the stand-in warning', () => {
   for (const d of ['README.md', 'docs/safety.md']) {
-    assert.match(read(d), /UNVERIFIED against product documentation/, d);
+    assert.match(read(d), /not checked against product documentation/, d);
     assert.match(read(d), /stand-in/i, d);
   }
-  assert.match(read('docs/architecture.md'), /UNVERIFIED against product documentation/);
+  assert.match(read('docs/architecture.md'), /not checked against product documentation/);
   assert.match(read('docs/safety.md'), /no claim/i);
 });
 
@@ -81,6 +81,6 @@ test('the H2 2026 limits the docs state are the ones in the code, and the releas
   assert.ok(section.includes(`${TOML_LIMITS.bytes.toLocaleString('en-US')} characters, ${TOML_LIMITS.lines} lines, ${RULE_LIMITS.rulesPerWorkspace} rules per workspace, ${RULE_LIMITS.matchesPerRule} matches per rule`), 'the paste limits');
   assert.ok(section.includes(`a ring of ${PL_STORE.maxRecords}`), 'the record ring');
   assert.ok(section.includes(`${LIMITS.textChars.toLocaleString('en-US')} characters`), 'the unit cap');
-  for (const d of ['README.md', 'docs/safety.md', 'CLAUDE.md']) assert.match(read(d), /UNVERIFIED on our tenant/, d);
-  assert.match(read('README.md'), /Ping release claims, UNVERIFIED on our tenant/);
+  for (const d of ['README.md', 'docs/safety.md', 'CLAUDE.md']) assert.match(read(d), /not checked on our tenant/, d);
+  assert.match(read('README.md'), /Ping release claims, not checked on our tenant/);
 });

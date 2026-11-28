@@ -33,7 +33,7 @@ test('GET /api/health is demo-health/1 and nothing more', async () => {
 test('every scripted scenario yields its expected decision', async () => {
   await reset();
   const list = (await get('/api/scenarios')).json;
-  assert.match(list.provenance, /UNVERIFIED/);
+  assert.match(list.provenance, /not checked against product documentation/);
   const ids = list.scenarios.map((s) => s.id);
   for (const want of ['benign', 'direct-injection', 'paraphrased-injection', 'pii-request', 'pii-response', 'a2a-per-key', 'outage-502', 'outage-timeout']) assert.ok(ids.includes(want), want);
   for (const id of ids) {

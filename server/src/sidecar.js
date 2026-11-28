@@ -1,5 +1,5 @@
 // The guardrail sidecar: POST /inspect (the contract as understood from the AI-DEMO2 demo_mcp_promptguard README,
-// UNVERIFIED against product documentation), GET /health, GET/PUT /demo/config, GET/PUT /demo/fault.
+// not checked against product documentation), GET /health, GET/PUT /demo/config, GET/PUT /demo/fault.
 // Runs standalone (sidecar-main.js) or embedded in the main server. Always loopback.
 import express from 'express';
 import { DEFAULT_RAILS, ENGINE, OPTIONAL_RAILS, RAILS, detectUnit } from './detectors.js';

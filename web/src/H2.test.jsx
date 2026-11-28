@@ -11,7 +11,7 @@ import { sealRecord, parsePublicJwk } from "../../server/src/seal.js";
 const KIND = (id, over = {}) => ({ id, label: `Kind ${id}`, group: "national", validation: "a check", severity: "high", legacy: false, valid: { shown: `m-${id}`, detected: true }, nearMiss: { shown: `n-${id}`, detected: false }, ...over });
 const KINDS = [KIND("card", { legacy: true, group: "financial" }), KIND("ssn", { legacy: true }), KIND("es-dni"), KIND("dob", { group: "health", severity: "medium" })];
 const H2 = () => ({
-  banner: "Ping release claim, UNVERIFIED on our tenant",
+  banner: "Ping release claims, not checked on our tenant",
   numbers: [
     { id: "pii-kinds", label: "Personal-data kinds", ping: 23, pingTag: "deck", pingNote: "went from 5 to 23", app: 4, appTag: "invented", appNote: "the app's own set" },
     { id: "total-rules", label: "Maintained rules in total", ping: 411, pingTag: "deck", app: null, appTag: null, appNote: "not comparable" },
@@ -61,11 +61,11 @@ const openH2 = async (user) => { await user.click(screen.getByTestId("tab-h2"));
 describe("H2 2026 release tab", () => {
   it("shows the release banner on both tabs, and switching tabs never blanks the page", async () => {
     const user = await ready();
-    expect(screen.getByTestId("release-banner")).toHaveTextContent("Ping release claim, UNVERIFIED on our tenant");
+    expect(screen.getByTestId("release-banner")).toHaveTextContent("Ping release claims, not checked on our tenant");
     expect(screen.getByTestId("release-banner")).toBeVisible();
     for (let i = 0; i < 3; i += 1) {
       await openH2(user);
-      expect(screen.getByTestId("release-banner")).toHaveTextContent("UNVERIFIED on our tenant");
+      expect(screen.getByTestId("release-banner")).toHaveTextContent("not checked on our tenant");
       expect(screen.getByTestId("release-banner")).toBeVisible();
       expect(screen.getByTestId("h2-tab")).toBeVisible();
       expect(document.getElementById("panel-demo")).toHaveAttribute("hidden");

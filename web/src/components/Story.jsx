@@ -1,5 +1,4 @@
 import React from "react";
-import { Unverified } from "./Badges.jsx";
 
 // The story in four steps. Fixed text: this demo has one cast and no vertical packs, so the story
 // system (the {{cast.*}} token family with a vertical supplying names, as in the sibling demos) is not wired in.
@@ -19,7 +18,7 @@ export default function Story() {
           <li key={n}><span className="story-n" aria-hidden="true">{n}</span><div><strong>{t}</strong><p>{d}</p></div></li>
         ))}
       </ol>
-      <p className="provenance"><Unverified /> The contract and the gateway behaviour are as understood from the demo environment, UNVERIFIED against product documentation. This app makes no claim about real product detection quality, defaults or licensing.</p>
+      <p className="provenance">The contract and the gateway behaviour are as understood from the demo environment, not checked against product documentation. This app makes no claim about real product detection quality, defaults or licensing.</p>
     </section>
   );
 }

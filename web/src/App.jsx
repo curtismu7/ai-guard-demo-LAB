@@ -5,7 +5,7 @@ import VerifyMark from "./components/VerifyMark.jsx";
 import ReturnLink from "./return-link/ReturnLink.jsx";
 import * as api from "./lib/api.js";
 import { buildSteps } from "./lib/model.js";
-import { Demo, StandIn, Unverified } from "./components/Badges.jsx";
+import { Demo, StandIn } from "./components/Badges.jsx";
 import Story from "./components/Story.jsx";
 import { setPresenter, initPresenter, presenterOn } from "./presenter.js";
 import TopMenu from "./top-menu/TopMenu.jsx";
@@ -37,7 +37,7 @@ const readTheme = () => {
 };
 const MAX_TEXT = 4000;
 // The release banner: every product claim about the H2 2026 release is Ping's, and not checked on our tenant.
-const RELEASE_BANNER = "Ping release claim, UNVERIFIED on our tenant";
+const RELEASE_BANNER = "Ping release claims, not checked on our tenant";
 const TABS = [["demo", "Sidecar demo"], ["apps", "Agentic Apps"], ["registry", "Agent Registry"], ["h2", "H2 2026 release"]];
 
 export default function App() {
@@ -194,7 +194,7 @@ export default function App() {
           {info?.source === "real"
             ? <span className="shell-badge shell-badge--real" data-testid="source-badge">Real<span className="sr-only">: calls go to the configured sidecar</span></span>
             : <span className="shell-badge" data-testid="source-badge">Mock<span className="sr-only">: in-process stand-in sidecar, nothing real is contacted</span></span>}
-          <span className="badges" data-testid="mode-badge"><Demo /><StandIn /><Unverified /></span>
+          <span className="badges" data-testid="mode-badge"><Demo /><StandIn /></span>
         </span>
         <nav className="shell-nav" aria-label="Views">
           {TABS.map(([id, label]) => (
@@ -300,7 +300,7 @@ export default function App() {
         </div>
 
         <Log decisions={decisions} />
-        <footer className="foot">Demo only. Loopback only. No model, no network. The /inspect contract and gateway behaviour are as understood from the demo environment, UNVERIFIED against product documentation, and nothing here says anything about real product detection quality, defaults or licensing.</footer>
+        <footer className="foot">Demo only. Loopback only. No model, no network. The /inspect contract and gateway behaviour are as understood from the demo environment, not checked against product documentation, and nothing here says anything about real product detection quality, defaults or licensing.</footer>
         </ErrorBoundary>
         </section>
         <section id="panel-apps" aria-labelledby="tab-apps" hidden={tab !== "apps"}>

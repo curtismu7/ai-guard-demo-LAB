@@ -6,7 +6,7 @@ const CARD = ['4242', '4242', '4242', '4242'].join(' ');
 const SSN = ['123', '45', '6789'].join('-');
 
 // Demo callers for the A2A scenario. A guardrail belongs to the calling agent's key, so two callers can get different
-// treatment for the same message (AI-DEMO2 docs/privilege-agent-features.md, row 14; unverified here).
+// treatment for the same message (AI-DEMO2 docs/privilege-agent-features.md, row 14; not checked here).
 export const CALLERS = {
   'payments-agent': { label: 'Payments agent (enforcing guardrail)', blockThresholds: { prompt_injection: 'low', jailbreak: 'medium', pii: 'medium' } },
   'research-agent': { label: 'Research agent (observe-only guardrail)', blockThresholds: { prompt_injection: 'none', jailbreak: 'none', pii: 'none' } },

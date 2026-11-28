@@ -39,7 +39,7 @@ Other variable: `HOST_PORT=7900` (Docker host port). Keep both inside 7900-7909.
 
 ## Read this first: what is and is not claimed
 
-- **The contract is reverse-engineered.** The `/inspect` request and response shapes, and the gateway behaviour above, are *as understood from the demo environment, UNVERIFIED against product documentation*. They come from a sidecar README in a sibling project that says the contract was reverse-engineered. Check the product documentation before relying on any detail.
+- **The contract is reverse-engineered.** The `/inspect` request and response shapes, and the gateway behaviour above, are *as understood from the demo environment, not checked against product documentation*. They come from a sidecar README in a sibling project that says the contract was reverse-engineered. Check the product documentation before relying on any detail.
 - **The detector is a stand-in.** It is a deterministic set of keyword and pattern rules with a score from 0 to 1. It is not a model and not a classifier. There is no model download, no ML dependency and no network. It exists so the contract can be taught offline.
 - **Nothing here says anything about real product detection quality, defaults or licensing.** The block thresholds and defaults in this demo are demo choices.
 - Detection quality is a property of the model you deploy. The app shows a paraphrased attack the stand-in misses and a harmless sentence it blocks, so you can see the trade-off.
@@ -92,7 +92,7 @@ Answer (a finding; the gateway would compare `severity` with the category's bloc
 
 A benign unit gives `{"findings":[]}`. `GET /health` gives `{"ok":true}`.
 
-### The contract as implemented (unverified against product docs)
+### The contract as implemented (not checked against product docs)
 
 Request: `{ tenant, user, app_name, units: [ { role, direction, text } ] }` where `direction` is `request` or `response`. Response: `{ findings: [ { category, severity, location: { index }, messages: [], contents: [] } ] }`. `location.index` is the position of the offending unit. Categories used here: `prompt_injection`, `jailbreak`, `pii`. Severities: `low`, `medium`, `high`. The role names `assistant_response` and `a2a_message` are this demo's own choice; only `user_prompt` appears in the source material.
 
@@ -130,8 +130,8 @@ Defaults (demo choices): `prompt_injection` blocks at `medium`, `pii` at `high` 
 
 Open `http://127.0.0.1:7900/` after `npm run build && npm start`. Top to bottom:
 
-- **Story strip**: the four steps of the contract, with the UNVERIFIED provenance line.
-- **Agentic Apps tab**: mock MCP "doors" — one application per backend MCP server, client route derived from the application name (`/<name>/mcp`), published tools, edit and delete. Route derivation and app semantics are as understood from the demo environment, UNVERIFIED.
+- **Story strip**: the four steps of the contract, with the provenance line.
+- **Agentic Apps tab**: mock MCP "doors" — one application per backend MCP server, client route derived from the application name (`/<name>/mcp`), published tools, edit and delete. Route derivation and app semantics are as understood from the demo environment, not checked against product documentation.
 - **Agent Registry tab**: mock agent access keys — scopes (llm/mcp/a2a), custodian, allowed apps (selecting them IS the grant), tool filter and the per-key guardrail (sidecar URL, timeout, Block Agreement, fail closed). "What Privilege did" shows the grant a key got, and "Try a call as a key" walks identity -> grant -> tool filter -> guardrail for a chosen call, including the refusals (401 invalid key, 403 key not scoped for mcp access, 403 policy denied, tool filter). Keys are mock-issued `vk-mock-…`, never real credentials.
 - **Pick something to try**: the ten scenarios, or your own prompt, optional upstream reply and calling agent key. Your text is only rendered as text; hidden characters show as `[U+XXXX]` chips.
 - **Diagram** (React Flow): client, gateway, sidecar, upstream and decision boxes you can drag. Simulate makes a real run and plays its hops back (speed 0.5x to 4x); Reset restores defaults and clears the run. Keyboard users get the same story in the caption under the diagram.
@@ -142,11 +142,11 @@ Open `http://127.0.0.1:7900/` after `npm run build && npm start`. Top to bottom:
 - **What the stand-in misses**: a paraphrased attack it misses and a harmless sentence it flags, computed live.
 - **Decision log**.
 
-`STAND-IN` and `UNVERIFIED` badges sit beside every panel that shows detection or gateway behaviour; the `DEMO` badge is in the header. Dark and light themes follow your system and can be toggled; there is no purple. The server serves `web/dist` with a same-origin CSP (`default-src 'self'`, no inline script; inline styles are allowed for the diagram library). One API addition for the UI: each inspected stage in a run carries `exchange` (the request body as sent and the answer in contract shape, both display copies with PII masked).
+`STAND-IN` badges sit beside every panel that shows detection or gateway behaviour; the `DEMO` badge is in the header. Dark and light themes follow your system and can be toggled; there is no purple. The server serves `web/dist` with a same-origin CSP (`default-src 'self'`, no inline script; inline styles are allowed for the diagram library). One API addition for the UI: each inspected stage in a run carries `exchange` (the request body as sent and the answer in contract shape, both display copies with PII masked).
 
-## H2 2026 release features (Ping release claims, UNVERIFIED on our tenant)
+## H2 2026 release features (Ping release claims, not checked on our tenant)
 
-The second tab, **H2 2026 release**, tries the data-protection ideas from Ping's deck "ID4AI Workforce - H2 2026" (slides 50 and 53, release dated 2026-11-02). **Every product claim there is a Ping release claim, UNVERIFIED on our tenant**: the release is not on our tenant and nothing was measured. A banner says so on both tabs, and each field carries a tag: deck claim, console swagger name (schema only), lab reading, lab-invented, measured (our note; nothing is). The first tab behaves as before until you switch something on.
+The second tab, **H2 2026 release**, tries the data-protection ideas from Ping's deck "ID4AI Workforce - H2 2026" (slides 50 and 53, release dated 2026-11-02). **Every product claim there is a Ping release claim, not checked on our tenant**: the release is not on our tenant and nothing was measured. A banner says so on both tabs, and each field carries a tag: deck claim, console swagger name (schema only), lab reading, lab-invented, measured (our note; nothing is). The first tab behaves as before until you switch something on.
 
 - **Personal-data kinds.** Ping's deck says the release goes from 5 to 23 kinds with checksum validation and per-kind detection. This app ships its own, smaller, illustrative set (the original five plus six more, each with a real check digit or a structural check, proved live on a valid sample and a near miss) and lets you choose which kinds raise a finding. Ping's list is not reproduced.
 - **Secret detectors.** Ping says 364 secret and credential detectors (411 rules with 47 behavioural). This app has twelve of its own, off by default behind a switch. The numbers are shown side by side, Ping's labelled as the deck's and the app's computed from its engine.
@@ -185,7 +185,7 @@ script are in `k8s/`. Nothing is deployed from this repo; the first deploy needs
 
 ## Learning Hub content pack
 
-`content-pack.json` (format `demo-content-pack/1`) is generated from `content/terms.json` (11 glossary terms, including the UNVERIFIED and STAND-IN statements) plus six H2 2026 terms generated from `server/src/h2.js` (the Ping numbers, kinds, your own rules, sealed prompt logging and the two why-it-matters entries, each marked as a Ping claim UNVERIFIED on our tenant) and `content/stories.json` (the four story-strip steps, same text as the UI; a test checks that), plus seven cards. The schema is a copy, in `docs/content-pack.schema.json`, of the one the Learning Hub uses. `sources` is empty: no public documentation URL was verified. The pack was also run once through the Learning Hub's own `validate-pack`.
+`content-pack.json` (format `demo-content-pack/1`) is generated from `content/terms.json` (11 glossary terms, including the not-checked and STAND-IN statements) plus six H2 2026 terms generated from `server/src/h2.js` (the Ping numbers, kinds, your own rules, sealed prompt logging and the two why-it-matters entries, each marked as a Ping claim not checked on our tenant) and `content/stories.json` (the four story-strip steps, same text as the UI; a test checks that), plus seven cards. The schema is a copy, in `docs/content-pack.schema.json`, of the one the Learning Hub uses. `sources` is empty: no public documentation URL was verified. The pack was also run once through the Learning Hub's own `validate-pack`.
 
 ```sh
 npm run content-pack      # regenerate and validate with ajv

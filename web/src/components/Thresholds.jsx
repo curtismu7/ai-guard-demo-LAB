@@ -1,6 +1,6 @@
 import React from "react";
 import { CATEGORIES, LEVELS, previewRun } from "../lib/model.js";
-import { StandIn, Unverified } from "./Badges.jsx";
+import { StandIn } from "./Badges.jsx";
 
 const DESC = {
   prompt_injection: "Instruction overrides, prompt exfiltration, delimiter and hidden-character tricks.",
@@ -16,9 +16,9 @@ export default function Thresholds({ thresholds, onThreshold, detector, onDetect
     <section aria-labelledby="th-h" className="card">
       <div className="card-head">
         <h2 id="th-h">Block thresholds</h2>
-        <span className="badges"><Unverified>DEMO DEFAULTS</Unverified></span>
+        <span className="badges"><StandIn /></span>
       </div>
-      <p className="fine">A finding at or above the threshold blocks. "none" makes the category alert-only. Move a slider and the decision for the last run flips below, with no new run needed.</p>
+      <p className="fine">A finding at or above the threshold blocks. "none" makes the category alert-only. The defaults are this demo's own. Move a slider and the decision for the last run flips below, with no new run needed.</p>
       {CATEGORIES.map((c) => {
         const i = LEVELS.indexOf(thresholds[c]);
         return (

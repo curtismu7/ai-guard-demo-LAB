@@ -1,6 +1,6 @@
 // The H2 2026 release content for this app (Ping's "ID4AI Workforce - H2 2026" deck, slides 50 and 53; release dated 2026-11-02).
 // ONE source for the API (GET /api/h2), the generated talk track and the content pack, so they cannot drift apart.
-// Every product claim below is a Ping release claim, UNVERIFIED on our tenant: the release is not on our tenant. Ping's numbers
+// Every product claim below is a Ping release claim, not checked on our tenant: the release is not on our tenant. Ping's numbers
 // (23 kinds, 364 secret detectors, 47 behavioural rules, 411 rules) are Ping's, quoted from the deck. The app's own counts are
 // COMPUTED from the engine here, never typed in, and are labelled as the app's.
 import { PII_GROUPS, PII_KIND_IDS, SAMPLES, findPii, LEGACY_KINDS, maskPii, piiCatalogue } from './pii.js';
@@ -11,7 +11,7 @@ import { PL_LIMITS, PL_STORE, SURFACES } from './promptlog.js';
 import { fold } from './fold.js';
 import { maskTyped } from './mask.js';
 
-export const BANNER = 'Ping release claim, UNVERIFIED on our tenant';
+export const BANNER = 'Ping release claims, not checked on our tenant';
 export const TAGS = Object.freeze({
   deck: 'deck claim',
   swagger: 'console swagger name (schema only)',
@@ -23,7 +23,7 @@ export const TAGS = Object.freeze({
 // Ping's figures, as the deck states them (slide 53). Nothing here was measured on our tenant.
 export const DECK = Object.freeze({ kinds: 23, kindsBefore: 5, secretDetectors: 364, behaviouralRules: 47, totalRules: 411, slide: 53 });
 
-// Challenge / Technical / Business from the deck's value panels (slides 50, 53). Ping claims, UNVERIFIED on our tenant.
+// Challenge / Technical / Business from the deck's value panels (slides 50, 53). Ping claims, not checked on our tenant.
 export const WHY_IT_MATTERS = Object.freeze([
   { id: 'aiguard', title: 'AIGuard (deck slide 53)', challenge: 'Authorization cannot see content: an agent following hidden instructions can exfiltrate data within policy.', technical: 'Content inspected in and out across MCP, A2A, LLM and coding-agent traffic; deterministic rules add no availability dependency.', business: 'A fraction of the cost of one incident; framework-mapped evidence for AI governance sign-off.' },
   { id: 'prompt-logging', title: 'Prompt Logging (deck slide 50)', challenge: 'Retaining prompts is what investigations need and what teams refuse to hand a vendor.', technical: 'Content sealed to your public key, decrypted only in your console session; Privilege never holds the private half.', business: 'Forensic retention becomes acceptable to security and legal.' },
@@ -37,7 +37,7 @@ export const FIELD_TAGS = Object.freeze([
   { id: 'pii-checks', field: 'the check digit for each numeric kind', tag: 'reading', note: 'A reading of public formats (Luhn, mod 97, mod 11, mod 23, a 3-7-1 weighted sum). Not a claim about Ping\'s validators.' },
   { id: 'rule-fields', field: 'ID, Description, Category, Severity, Keywords, Pattern, Entropy, Allowlist, ValueGroup', tag: 'swagger', note: 'Field names of modelAIGuardCustomRule in the console swagger. A name proves a field exists, not how it behaves.' },
   { id: 'rule-toml-keys', field: 'the TOML keys: id, description, regex, keywords, entropy, secretGroup, category, severity, [rules.allowlist].regexes', tag: 'reading', note: 'A reading of the gitleaks rule format. Pattern source is the standard "your own formats paste in unchanged" (deck slide 53) as the app understands it.' },
-  { id: 'rule-refuse-all', field: 'one bad rule refuses the whole paste', tag: 'reading', note: 'The console swagger\'s description of imodelAIGuardRuleImport says so; how the product behaves is unverified.' },
+  { id: 'rule-refuse-all', field: 'one bad rule refuses the whole paste', tag: 'reading', note: 'The console swagger\'s description of imodelAIGuardRuleImport says so; how the product behaves is not checked.' },
   { id: 'rule-category-set', field: 'the category names a pasted rule may use, and what the gateway does with them', tag: 'invented', note: 'The gateway here has sliders only for prompt_injection, jailbreak and pii. Any other category (secrets, data_exfiltration, malicious_content) blocks at high, the demo\'s existing rule for a category it does not know, so the rule\'s Severity decides.' },
   { id: 'rule-limits', field: 'the caps on a paste (size, lines, rules, matches)', tag: 'invented', note: 'Limits chosen for a safe local demo.' },
   { id: 'counts-ping', field: '23 kinds, 364 secret detectors, 47 behavioural rules, 411 rules', tag: 'deck', note: 'Ping\'s figures from slide 53, uncited in the deck. Shown only in the "Ping says" column.' },

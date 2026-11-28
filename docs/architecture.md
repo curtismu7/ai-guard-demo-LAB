@@ -17,18 +17,18 @@ upstream stub (canned text; skipped when the request was blocked)
 decision log (server/src/decisions.js)
 ```
 
-All of this is "as understood from the demo environment, UNVERIFIED against product documentation" (see [safety.md](safety.md)).
+All of this is "as understood from the demo environment, not checked against product documentation" (see [safety.md](safety.md)).
 
 ## Pieces
 
 - `server/src/sidecar.js`: the HTTP sidecar. `POST /inspect`, `GET /health`, `GET/PUT /demo/config`, `GET/PUT /demo/fault`. It owns the detector threshold, the benign labels, the rails and the fault state. Runs standalone through `server/src/sidecar-main.js` or embedded in the main server.
 - `server/src/detectors.js`: the stand-in rules and the label scoring. A finding is made when a non-benign label scores at or above the threshold. `server/src/pii.js` holds the PII finder and masker.
 - `server/src/gateway.js`: calls the sidecar over loopback HTTP with a timeout, validates the reply, compares each finding's severity with its category's block threshold, and applies the fail-closed toggle on error. Severity order is `low` < `medium` < `high`; a threshold of `none` means alert only.
-- `server/src/scenarios.js`: the scripted scenarios, the two demo callers for the A2A case (a guardrail belongs to the calling agent's key, as the source docs describe it; unverified here) and each run's expected decision.
+- `server/src/scenarios.js`: the scripted scenarios, the two demo callers for the A2A case (a guardrail belongs to the calling agent's key, as the source docs describe it; not checked here) and each run's expected decision.
 - `server/src/service.js`: gateway configuration, the one-at-a-time run queue (cap 4), scenario and custom runs, the fault injector (applied to the sidecar over its `/demo/fault` endpoint and restored after a scenario), reset.
 - `server/src/app.js`: Express app, guards, routes, `startHttpServer()` (starts the embedded sidecar, then the gateway server).
 - `server/src/safety.js`, `sanitize.js`, `redaction.js`: guards, inert text and secret redaction.
-- H2 2026 release additions (Ping release claims, UNVERIFIED on our tenant; see [safety.md](safety.md)): `server/src/pii.js` (selectable kinds with check digits), `secrets.js` (bundled secret detectors), `toml.js`, `safeRegex.js` and `rules.js` (your own gitleaks-format rules, kept in the sidecar's state; `GET/PUT/DELETE /demo/rules`), `fold.js` and `mask.js` (masking of what you type), `seal.js` and `promptlog.js` (prompt logging sealed to your key; the store lives in the service, one per workspace), `h2.js` (the one source of the H2 content: numbers, claim tags, why it matters; served by `GET /api/h2`, and used by the generated talk track and content pack). In the web UI: the "H2 2026 release" tab (`web/src/components/H2Tab.jsx`, `Kinds.jsx`, `Rules.jsx`, `PromptLog.jsx`) and `web/src/lib/seal.js` (opens a record with WebCrypto).
+- H2 2026 release additions (Ping release claims, not checked on our tenant; see [safety.md](safety.md)): `server/src/pii.js` (selectable kinds with check digits), `secrets.js` (bundled secret detectors), `toml.js`, `safeRegex.js` and `rules.js` (your own gitleaks-format rules, kept in the sidecar's state; `GET/PUT/DELETE /demo/rules`), `fold.js` and `mask.js` (masking of what you type), `seal.js` and `promptlog.js` (prompt logging sealed to your key; the store lives in the service, one per workspace), `h2.js` (the one source of the H2 content: numbers, claim tags, why it matters; served by `GET /api/h2`, and used by the generated talk track and content pack). In the web UI: the "H2 2026 release" tab (`web/src/components/H2Tab.jsx`, `Kinds.jsx`, `Rules.jsx`, `PromptLog.jsx`) and `web/src/lib/seal.js` (opens a record with WebCrypto).
 
 ## Why the gateway talks to the sidecar over HTTP even when embedded
 
