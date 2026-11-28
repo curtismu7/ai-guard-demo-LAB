@@ -149,7 +149,7 @@ Agentic Apps: the doors
 One application per backend MCP server. The client route is derived from the application name.
 
 ## Column A: On the app
-- Name: banking, travel, notes
+- Name: airline, banking, travel, notes
 - Backend: the MCP server URL
 - Published tools
 
@@ -188,7 +188,7 @@ Add Application (MCP Server) creates a door with its backend URL and its publish
 The keys
 
 ## Text
-Three mock keys ship: payments-agent (mcp, banking, tool-filtered), research-agent (llm, no app grant) and orchestrator (mcp + a2a, two apps). One key IS the agent's whole identity.
+Three mock keys ship: payments-agent (mcp, airline and banking, tool-filtered), research-agent (llm, no app grant) and orchestrator (mcp + a2a, three apps). One key IS the agent's whole identity.
 
 ---
 
@@ -228,7 +228,7 @@ Pick a key, an app and a tool. The registry decides access first: identity, then
 Permitted, then screened
 
 ## Text
-payments-agent calling banking.get_my_accounts is permitted. The key's own guardrail then screens the call text with the same sidecar contract, and a behavioral-risk evaluation from PingOne Protect rides along as a second, real signal — it informs, it never decides.
+payments-agent calling airline.search_flights is permitted. The key's own guardrail then screens the call text with the same sidecar contract, and a behavioral-risk evaluation from PingOne Protect rides along as a second, real signal — it informs, it never decides.
 
 ---
 

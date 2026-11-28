@@ -59,7 +59,7 @@ export function createHost({ win = window, doc = document, mode = () => 'mock', 
       if (step.prompt && step.prompt.press) {
         // A press on a <select> opens the picker instead of running; the call flow is driven by the wiring's callFlow below.
         const el = q(step.prompt.press);
-        if (el && el.id === 'call-key') return callFlow(doc, host, { keyName: 'research-agent', appName: 'banking', tool: 'get_my_accounts' });
+        if (el && el.id === 'call-key') return callFlow(doc, host, { keyName: 'research-agent', appName: 'airline', tool: 'search_flights' });
         click(el);
         return;
       }
@@ -76,7 +76,7 @@ export function createHost({ win = window, doc = document, mode = () => 'mock', 
 }
 
 // The try-a-call flow: fill the three selects, then press Send. Script-made events only.
-async function callFlow(doc, host, { keyName = 'payments-agent', appName = 'banking', tool = 'get_my_accounts' } = {}) {
+async function callFlow(doc, host, { keyName = 'payments-agent', appName = 'airline', tool = 'search_flights' } = {}) {
   const setSelect = (id, value) => {
     const el = doc.getElementById(id);
     if (!el) return false;

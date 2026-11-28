@@ -32,6 +32,7 @@ const bool = (v, what, dflt) => {
 };
 
 export const DEFAULT_APPS = [
+  { id: 'app-airline', name: 'airline', type: 'mcp', mcpUrl: 'http://airline.invalid/mcp', tools: ['search_flights', 'book_flight', 'get_reservation'], published: true },
   { id: 'app-banking', name: 'banking', type: 'mcp', mcpUrl: 'http://banking.invalid/mcp', tools: ['get_my_accounts', 'get_account_balance', 'list_transactions'], published: true },
   { id: 'app-travel', name: 'travel', type: 'mcp', mcpUrl: 'http://travel.invalid/mcp', tools: ['search_flights', 'book_flight'], published: true },
   { id: 'app-notes', name: 'notes', type: 'mcp', mcpUrl: 'http://notes.invalid/mcp', tools: ['search_notes', 'create_note'], published: false },
@@ -41,7 +42,7 @@ export const DEFAULT_KEYS = [
   {
     id: 'key-payments-agent', name: 'payments-agent', custodian: 'alice.example', provider: null, scopes: ['mcp'],
     allowedModels: [], rpm: 60, tpm: 10000, expiresAt: null, revoked: false,
-    apps: ['app-banking'], tools: ['get_my_accounts', 'get_account_balance'],
+    apps: ['app-airline', 'app-banking'], tools: ['search_flights', 'get_reservation', 'get_my_accounts'],
     guardrail: { enabled: true, sidecarUrl: 'http://localhost:8086/inspect', timeoutMs: 1000, blockAgreement: 'off', failClosed: false },
   },
   {
@@ -53,7 +54,7 @@ export const DEFAULT_KEYS = [
   {
     id: 'key-orchestrator', name: 'orchestrator', custodian: 'alice.example', provider: null, scopes: ['mcp', 'a2a'],
     allowedModels: [], rpm: 120, tpm: 20000, expiresAt: null, revoked: false,
-    apps: ['app-banking', 'app-travel'], tools: [],
+    apps: ['app-airline', 'app-banking', 'app-travel'], tools: [],
     guardrail: { enabled: false, sidecarUrl: '', timeoutMs: 1000, blockAgreement: 'off', failClosed: false },
   },
 ];
