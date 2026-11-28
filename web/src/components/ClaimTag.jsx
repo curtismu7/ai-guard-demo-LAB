@@ -6,6 +6,6 @@ const CLASS = { deck: "badge-warn", swagger: "badge-info", reading: "badge-demo"
 
 export default function ClaimTag({ tag }) {
   if (!LABEL[tag]) return null;
-  return <span className={`badge ${CLASS[tag]}`} data-tag={tag} title="Where this comes from. Ping release claims are not checked on our tenant.">{LABEL[tag]}</span>;
+  return <span className={`badge ${CLASS[tag]}`} data-tag={tag} title="Where this comes from.">{LABEL[tag]}</span>;
 }
 export const TAG_LABELS = LABEL;
