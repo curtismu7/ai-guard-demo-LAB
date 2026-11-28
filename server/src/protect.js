@@ -52,11 +52,23 @@ export class ProtectClient {
       body: JSON.stringify({ event }),
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data?.result?.riskLevel) throw new Error(`risk evaluation failed (${res.status})`);
+    if (!res.ok || (res.status !== 200 && res.status !== 201)) throw new Error(`risk evaluation failed (${res.status})`);
+    // Real Protect response shape (measured on the tenant, 2026-11-27): result.level / result.score,
+    // per-signal levels in details. The old result.riskLevel shape was a guess from the BFF demo.
+    if (!data?.result?.level) throw new Error(`risk evaluation failed (${res.status})`);
+    const d = data.details ?? {};
+    const reasons = Object.entries({
+      anonymousNetwork: d.anonymousNetworkDetected === true,
+      impossibleTravel: d.impossibleTravel === true,
+      ipVelocity: d.ipVelocityByUser?.level && d.ipVelocityByUser.level !== 'LOW' ? d.ipVelocityByUser.level : null,
+      userVelocity: d.userVelocityByIp?.level && d.userVelocityByIp.level !== 'LOW' ? d.userVelocityByIp.level : null,
+      bot: d.botDetection?.level && d.botDetection.level !== 'LOW' ? d.botDetection.level : null,
+    }).filter(([, v]) => v).map(([k, v]) => (v === true ? k : `${k}:${v}`));
     return {
-      riskLevel: data.result.riskLevel,
+      riskLevel: data.result.level,
+      score: typeof data.result.score === 'number' ? data.result.score : null,
       recommendedAction: data.result.recommendedAction ?? null,
-      reasons: Array.isArray(data.result.reasons) ? data.result.reasons.map((x) => x?.type ?? String(x)).slice(0, 10) : [],
+      reasons: reasons.slice(0, 10),
       mode: 'real',
     };
   }

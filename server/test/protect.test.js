@@ -29,13 +29,13 @@ test('protectEvaluate: undefined when client is null (feature off), no fetch', a
   assert.equal(called, false);
 });
 
-test('protectEvaluate: returns level/action/reasons on success', async () => {
+test('protectEvaluate: returns level/action/reasons on success (201 Created, real shape)', async () => {
   const f = fetchMock({
     token: () => res(true, { access_token: 'tok', expires_in: 3600 }),
-    risk: () => res(true, { result: { riskLevel: 'LOW', recommendedAction: 'ALLOW', reasons: [{ type: 'UNKNOWN_DEVICE' }] } }),
+    risk: () => ({ ok: true, status: 201, json: async () => ({ result: { level: 'MEDIUM', score: 40 }, details: { anonymousNetworkDetected: true, ipVelocityByUser: { level: 'MEDIUM' }, botDetection: { level: 'LOW' } } }) }),
   });
   const out = await protectEvaluate(new ProtectClient(CFG, { fetchImpl: f }), { ip: '1.2.3.4', userAgent: 'ua', userId: 'alice.example' });
-  assert.deepEqual(out, { riskLevel: 'LOW', recommendedAction: 'ALLOW', reasons: ['UNKNOWN_DEVICE'], mode: 'real' });
+  assert.deepEqual(out, { riskLevel: 'MEDIUM', score: 40, recommendedAction: null, reasons: ['anonymousNetwork', 'ipVelocity:MEDIUM'], mode: 'real' });
   const riskCall = f.calls.find((c) => !c.url.includes('/as/token'));
   assert.match(riskCall.url, /riskEvaluations/);
   assert.equal(riskCall.headers.Authorization, 'Bearer tok');
@@ -65,7 +65,7 @@ test('token cache: second evaluate within expiry reuses the token (one token cal
   let tokenCalls = 0;
   const f = fetchMock({
     token: () => { tokenCalls += 1; return res(true, { access_token: 'tok', expires_in: 3600 }); },
-    risk: () => res(true, { result: { riskLevel: 'MEDIUM' } }),
+    risk: () => res(true, { result: { level: 'MEDIUM' } }),
   });
   const c = new ProtectClient(CFG, { fetchImpl: f });
   await c.evaluate({}); await c.evaluate({});
