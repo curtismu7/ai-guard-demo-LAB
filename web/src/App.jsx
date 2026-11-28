@@ -9,6 +9,8 @@ import { Demo, StandIn, Unverified } from "./components/Badges.jsx";
 import Story from "./components/Story.jsx";
 import { setPresenter, initPresenter, presenterOn } from "./presenter.js";
 import TopMenu from "./top-menu/TopMenu.jsx";
+import HelpDialog from "./help-dialog/HelpDialog.jsx";
+import { HELP_SECTIONS } from "./helpContent";
 import Diagram from "./components/Diagram.jsx";
 import Exchange from "./components/Exchange.jsx";
 import Findings from "./components/Findings.jsx";
@@ -63,6 +65,7 @@ export default function App() {
   const [storyOn, setStoryOn] = useState(() => readView(STORY_PREFIX) === "story");
   const [toggleKey, setToggleKey] = useState(0);
   const [showTalk, setShowTalk] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const saveTimer = useRef(null);
   const latest = useRef({});
 
@@ -202,7 +205,7 @@ export default function App() {
           mode={{ value: info?.source === "real" ? "real" : "mock", onChange: onSelectMode, realAvailable: info ? info.realAvailable === true : null, realHint: info?.realReason }}
           theme={{ value: theme, onChange: setTheme }}
           present={{ active: presenterOn(), onToggle: () => setPresenter(!presenterOn()), label: "Present" }}
-          help={{ href: "https://github.com/curtismu7/ai-guard-demo-LAB#readme" }}
+          help={{ onClick: () => setHelpOpen(true), title: "What this lab is, and what is simulated" }}
           version={info?.version || null}
           onReset={doReset}
           talkTrack={{ active: showTalk, onToggle: () => setShowTalk((v) => !v) }}
@@ -222,6 +225,7 @@ export default function App() {
         <p className="lede">How an AI guard screens what agents send and receive. A mock gateway forwards text to a guardrail and applies its answer — pick a scenario, press Simulate, then change the thresholds or break the guardrail.</p>
         <Story />
         {showTalk && <TalkTrack />}
+        <HelpDialog isOpen={helpOpen} onClose={() => setHelpOpen(false)} sections={HELP_SECTIONS} docsUrl="https://github.com/curtismu7/ai-guard-demo-LAB#readme" />
         {error && <p role="alert" className="error" data-testid="error">{error}</p>}
         <p className="sr-only" role="status" aria-live="polite" data-testid="status">{status}</p>
 
