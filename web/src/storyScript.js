@@ -23,7 +23,7 @@ export const STEPS = [
 
   // ---- the Agentic Apps tab
   { key: 'apps_intro', type: 'slide', trigger: 'load' },
-  { key: 'apps_route', type: 'bubble', tab: 'apps', trigger: 'load', target: '[data-testid=app-route-banking]', prefer: 'right' },
+  { key: 'apps_route', type: 'bubble', tab: 'apps', trigger: 'load', target: '[data-testid=app-route-airline]', prefer: 'right' },
   { key: 'apps_edit', type: 'bubble', tab: 'apps', trigger: 'load', target: '[data-testid=add-app]', prefer: 'below' },
 
   // ---- the Agent Registry tab
