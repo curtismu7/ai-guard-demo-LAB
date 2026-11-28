@@ -62,7 +62,7 @@ describe("return link", () => {
     for (const q of ["/", "/?from=elsewhere&uc=UC-LEARN11", "/?from=customer-agent&uc=%3Cb%3E", "/?from=customer-agent&uc=UC-LEARN11&vertical=a%20b"]) {
       window.history.replaceState(null, "", q);
       render(<App />);
-      await screen.findByLabelText("Benign prompt");
+      await screen.findByTestId("scenario-pick");
       expect(screen.queryByRole("button", { name: /Back to/ })).toBeNull();
       expect(screen.queryByRole("note", NOTE)).toBeNull();
       cleanup();

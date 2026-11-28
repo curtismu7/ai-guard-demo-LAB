@@ -4,10 +4,10 @@ import { Unverified } from "./Badges.jsx";
 // The story in four steps. Fixed text: this demo has one cast and no vertical packs, so the story
 // system (the {{cast.*}} token family with a vertical supplying names, as in the sibling demos) is not wired in.
 const STEPS = [
-  ["1", "The gateway sends text", "The text units of an agent or LLM request, and later of the response, go to the sidecar's /inspect."],
-  ["2", "The sidecar answers with findings", "Each finding has a category, a severity and the index of the unit it is about. An empty list means allow."],
+  ["1", "The gateway sends text", "The text units of an agent or LLM request, and later of the response, go to the AI guard for screening."],
+  ["2", "The guard answers with findings", "Each finding has a category, a severity and the index of the unit it is about. An empty list means allow."],
   ["3", "The gateway compares", "A finding at or above that category's block threshold means block. Otherwise it allows, maybe with an alert."],
-  ["4", "If the sidecar fails", "A Fail Closed toggle decides: block everything, or let everything through unchecked."],
+  ["4", "If the guard fails", "A Fail Closed toggle decides: block everything, or let everything through unchecked."],
 ];
 
 export default function Story() {

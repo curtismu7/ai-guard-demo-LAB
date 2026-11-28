@@ -49,7 +49,7 @@ describe("verification mark in the header", () => {
       const { unmount } = render(<App />);
       const header = within(document.querySelector("header.shell-bar"));
       expect(await header.findByRole("link", { name: "Shelf" })).toBeInTheDocument(); // the shelf answered, and still no badge
-      await screen.findByLabelText("Benign prompt");
+      await screen.findByTestId("scenario-pick");
       expect(document.querySelector(".verify")).toBeNull();
       unmount();
     }
