@@ -16,7 +16,7 @@ npm start           # http://127.0.0.1:7900 (embedded sidecar 7903); build first
 npm run sidecar     # standalone sidecar on 7902 (refused under MODE=se-mock)
 ```
 
-Mode: `MODE=local` (default) is the demo. `MODE=se-mock` is the mock-only SE k8s build (rule 18): live settings refused, per-visitor workspaces (`X-Workspace-Id`), a hosted banner, manifests in `k8s/`. See [docs/k8s.md](docs/k8s.md). Nothing is deployed from here; the first SE deploy needs owner approval.
+Mode: `MODE=local` (default) is the demo. `MODE=se-mock` is the mock-only SE k8s build (rule 18): live settings refused, per-visitor workspaces (`X-Workspace-Id`), a hosted line in the MOCK modal, manifests in `k8s/`. See [docs/k8s.md](docs/k8s.md). Nothing is deployed from here; the first SE deploy needs owner approval.
 
 Ports: 7900 app, 7901 Vite dev, 7902 standalone sidecar, 7903 embedded sidecar, 7904-7905 e2e; tests 7930-7979. App range 7900-7909.
 
@@ -34,6 +34,7 @@ Ports: 7900 app, 7901 Vite dev, 7902 standalone sidecar, 7903 embedded sidecar, 
 
 ## Story mode and Real mode
 
+- Real-or-mock modal: `web/src/mode-modal/` is vendored byte for byte from `AI-DEMO-Standalone/shared/mode-modal` (pin `mode-modal.sha256`, checked by `web/src/test/mode-modal.pin.test.js`); never edit it, change `shared/mode-modal/` first. It replaced the simulation banner; the lab's lines are `MODE_LINES` in `web/src/App.jsx` (local Mock, hosted, Real). It is suppressed while Story is on. A Playwright or video script must close it (`mode-modal-ok`) or pre-set sessionStorage `ai-guard-mode-seen-mock` / `-real`.
 - Story mode: the shared engine is vendored byte-for-byte from `AI-DEMO-Standalone/shared/story` (commit at the time of vendoring, 2026-11-26) into `web/src/story/` and `server/src/story/`, pinned by `web/src/story/story.sha256` and checked by `scripts/story-checkPin.mjs` (called from `server/test/story.test.js`). NEVER edit a vendored copy: change `shared/story/` first (its own PR), then re-vendor and re-pin. The wording is `story/captions.md` (served at GET /api/story, re-read when it changes); the script is `web/src/storyScript.js`; the glue is `web/src/storyWiring.js` and `web/src/StoryRoot.jsx`; the toggle rides in the TopMenu `extra` slot. The parity test fails the build when the wording and the script disagree. Story works in Mock (sample_* wording, labelled simulated) and Real.
 - Real mode: the Mock/Real toggle calls an external AI Guard sidecar at `AI_GUARD_SIDECAR_URL` (this app's own `.env` beside the compose file, gitignored; `.env.example` names the variables). Unset = Mock only; the toggle is then disabled with a how-to tooltip and POST /api/mode answers 409. The URL must be loopback http (`assertSidecarUrl`); an out-of-range port (e.g. the demo environment's real ML sidecar on 8086) needs the explicit opt-in `AI_GUARD_ALLOW_EXTERNAL_SIDECAR=1` — the opt-in relaxes only the port check, never loopback/scheme/credentials; from the container a host sidecar is reachable only if you run the lab from a host checkout or attach a sidecar container to the same Docker network.
 

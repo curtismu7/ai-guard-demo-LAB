@@ -7,7 +7,7 @@ setting: `MODE=se-mock`. Nothing here has been deployed. The first deploy to the
 ## What it is
 
 - One container, port 7900, listening on all interfaces inside the pod. The cluster ingress is the only way in.
-- Hosted and simulated: the UI shows a banner on every view (`/api/info` carries the text), and `/api/health` reports
+- Hosted and simulated: the UI opens on a MOCK modal that says so (`/api/info` says `hosted`; the modal's hosted line is in `web/src/App.jsx`), and `/api/health` reports
   `"mode": "se-mock"`.
 - Each visitor gets a workspace. The browser tab sends `X-Workspace-Id`; a visitor's gateway config, fault injector,
   decision log and run queue are their own. Nobody can read or change another workspace without guessing its id, and
@@ -91,7 +91,7 @@ for the pod, because the app accepts loopback Host headers only.
   change each other, and the embedded sidecar keeping per-workspace fault state.
 - `server/test/workspaces.test.js`: id validation, the cap, least-recently-used eviction, the TTL and the default's
   protection.
-- `web/src/lib/workspace.test.js` and `web/src/App.test.jsx`: the tab's id and the banner.
+- `web/src/lib/workspace.test.js` and `web/src/App.test.jsx`: the tab's id and the modal.
 
 ## Residual risks
 
@@ -102,8 +102,8 @@ for the pod, because the app accepts loopback Host headers only.
 - The cap (50) and the TTL (30 minutes) bound memory, not request rate. The run queue is capped per workspace (4) but
   the number of workspaces is not rate-limited.
 - The constant tables are not frozen. A future bug could mutate `SCENARIOS` or `CALLERS` and affect every visitor.
-- The banner and the docs say the detector is a stand-in. The UI does not guarantee that a screenshot carries the
-  banner.
+- The modal and the docs say the detector is a stand-in. The modal shows once per browser session, so the UI does not
+  guarantee that a screenshot carries it.
 - The container runs with a read-only root filesystem and an emptyDir `/tmp`. Node's own runtime is not sandboxed
   beyond those settings and the seccomp profile.
 - Workspace flood (no auth by design): once 50 workspaces exist, a new id evicts the least recently used non-default

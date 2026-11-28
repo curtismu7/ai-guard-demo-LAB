@@ -21,7 +21,7 @@ import Log from "./components/Log.jsx";
 import { SecondLayer, Compliance, Behaviour } from "./components/Governance.jsx";
 import Inert from "./components/Inert.jsx";
 import TalkTrack from "./components/TalkTrack.jsx";
-import SimulationBanner from "./components/SimulationBanner.jsx";
+import ModeModal from "./mode-modal/ModeModal.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import H2Tab from "./components/H2Tab.jsx";
 import AppsTab from "./components/AppsTab.jsx";
@@ -31,6 +31,12 @@ import { getWorkspaceId } from "./lib/workspace.js";
 
 const THEME_KEY = "ai-guard-theme";
 const STORY_PREFIX = "ai-guard-demo";
+// The Real-or-mock modal's lines (it replaced the long simulation banner). Hosted is Mock only, so it has its own Mock line; until /api/info answers, or if it fails, the local Mock line shows.
+const MODE_LINES = {
+  mock: "Everything on this page is simulated: a mock gateway and a deterministic keyword stand-in for the detector, not a real classifier. No tenant, no network, no credentials.",
+  hosted: "Hosted and simulated: every decision here is synthetic and the detector is a keyword stand-in. Your workspace is private to this browser tab and held in memory only.",
+  real: "Calls go to the external sidecar set by AI_GUARD_SIDECAR_URL, and the findings come from it. The gateway, its keys and the scenarios are still this demo's; the try-a-call pane also shows a PingOne Protect behavioral-risk evaluation when the lab is configured for it.",
+};
 const StoryRoot = React.lazy(() => import("./StoryRoot.jsx"));
 const readTheme = () => {
   try { const t = localStorage.getItem(THEME_KEY); if (t === "dark" || t === "light" || t === "auto") return t; } catch { /* storage blocked */ }
@@ -218,7 +224,6 @@ export default function App() {
         </TopMenu>
       </header>
       <main id="main" tabIndex={-1}>
-        <SimulationBanner info={info} />
         <ReturnLink app="ai-guard-demo" />
         <section id="panel-demo" aria-labelledby="tab-demo" hidden={tab !== "demo"}>
         <ErrorBoundary resetKey={`${tab}-demo`}>
@@ -337,6 +342,7 @@ export default function App() {
           )}
         </section>
       </main>
+      <ModeModal mode={info?.source === "real" && !info.hosted ? "real" : "mock"} lines={{ mock: info?.hosted ? MODE_LINES.hosted : MODE_LINES.mock, real: MODE_LINES.real }} suppress={storyOn} storageKey="ai-guard-mode" />
       {storyOn ? (
         <React.Suspense fallback={null}>
           <StoryRoot mode={info?.source === "real" ? "real" : "mock"} ready={!!info} onExit={leaveStory} prefix={STORY_PREFIX} />

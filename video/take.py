@@ -132,6 +132,8 @@ def main():
         ctx.add_init_script("window.__cmScale = " + json.dumps(SCALE) + ";")
         ctx.add_init_script("window.__pillText = " + json.dumps("SAMPLE: simulated stand-in, not a live run" if SAMPLE else None) + ";")
         ctx.add_init_script(overlay_script())
+        # The Real-or-mock modal would sit over the page and the first click; mark both modes seen so a take opens on the page (Story suppresses it anyway once on).
+        ctx.add_init_script("try { sessionStorage.setItem('ai-guard-mode-seen-mock', '1'); sessionStorage.setItem('ai-guard-mode-seen-real', '1'); } catch (e) {}")
         if RECORD_PW:
             initial = list(ctx.pages); page = ctx.new_page(); clock0 = time.monotonic()
             for p in initial: p.close()
