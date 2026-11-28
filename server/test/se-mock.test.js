@@ -20,7 +20,7 @@ const ws = (id) => (id === undefined ? {} : { 'x-workspace-id': id });
 const get = (p, id) => request(port, 'GET', p, { headers: ws(id) });
 const put = (p, body, id) => request(port, 'PUT', p, { body, headers: ws(id) });
 const post = (p, body, id) => request(port, 'POST', p, { body, headers: ws(id) });
-const OPEN_GATEWAY = { failClosed: false, timeoutMs: 1000, blockThresholds: { prompt_injection: 'medium', jailbreak: 'none', pii: 'high' } };
+const OPEN_GATEWAY = { failClosed: false, timeoutMs: 1000, blockThresholds: { prompt_injection: 'medium', jailbreak: 'none', pii: 'high' }, sanitizeMode: 'off' };
 
 // A refusal must throw. If a guard is missing and the server starts, close it before failing, so the runner exits.
 async function mustRefuse(opts, re) {

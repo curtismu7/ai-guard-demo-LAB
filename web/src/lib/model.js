@@ -64,8 +64,8 @@ export function buildSteps(run) {
   const req = run.stages.find((s) => s.stage === "request");
   const up = run.stages.find((s) => s.stage === "upstream");
   const resp = run.stages.find((s) => s.stage === "response");
-  const note = (st) => (st.sidecar.ok ? `${st.evaluations.length} finding${st.evaluations.length === 1 ? "" : "s"} in ${st.sidecar.latencyMs} ms` : `sidecar failed (${st.sidecar.error})`);
-  const verdict = (st) => `${st.decision === "block" ? "BLOCK" : "ALLOW"}: ${REASON_TEXT[st.reason]}`;
+  const note = (st) => (!st || st.skipped ? "" : st.sidecar.ok ? `${st.evaluations.length} finding${st.evaluations.length === 1 ? "" : "s"} in ${st.sidecar.latencyMs} ms` : `sidecar failed (${st.sidecar.error})`);
+  const verdict = (st) => `${st.decision === "block" ? "BLOCK" : st.decision === "sanitize" ? "SANITIZE" : "ALLOW"}: ${REASON_TEXT[st.reason] ?? st.reason ?? ""}`;
   const steps = [
     { nodes: ["client", "gateway"], edges: ["e-cg"], text: `The client sends a ${req.unit.role === "a2a_message" ? "message to another agent" : "prompt"} to the gateway.` },
     { nodes: ["gateway", "sidecar"], edges: ["e-gs"], text: `The gateway POSTs the text to the sidecar's /inspect (request direction): ${note(req)}.` },
@@ -75,7 +75,8 @@ export function buildSteps(run) {
     steps.push({ nodes: ["upstream"], edges: [], skipped: true, text: "The upstream is never called, so it never sees the text." });
     return steps;
   }
-  steps.push({ nodes: ["gateway", "upstream"], edges: ["e-gu"], text: `The gateway forwards to the upstream, which answers (${up.chars} characters).` });
+  steps.push({ nodes: ["gateway", "upstream"], edges: ["e-gu"], text: up.sanitized ? `The gateway masks the findings in the text and forwards (${up.chars} characters).` : `The gateway forwards to the upstream, which answers (${up.chars} characters).` });
+  if (!resp || resp.skipped) return steps;
   steps.push({ nodes: ["gateway", "sidecar"], edges: ["e-gs"], text: `The answer is inspected too (response direction): ${note(resp)}.` });
   steps.push({ nodes: ["gateway", "decision"], edges: ["e-gd"], decide: resp.decision, text: `At the response: ${verdict(resp)}` });
   return steps;

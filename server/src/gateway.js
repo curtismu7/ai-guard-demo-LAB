@@ -23,6 +23,7 @@ export const DEFAULT_GATEWAY_CONFIG = Object.freeze({
   failClosed: true,
   timeoutMs: defaultTimeout,
   blockThresholds: { prompt_injection: 'medium', jailbreak: 'none', pii: 'high' },
+  sanitizeMode: 'off',
 });
 export const TIMEOUT_RANGE = [TIMEOUT_MIN, TIMEOUT_MAX];
 // A category the demo does not know blocks at this level (a conservative demo choice).
@@ -48,9 +49,10 @@ export function validateTimeout(ms) {
 export function validateGatewayConfig(v) {
   if (!v || typeof v !== 'object' || Array.isArray(v)) throw new Invalid('gateway must be an object');
   const keys = Object.keys(v).sort().join();
-  if (keys !== 'blockThresholds,failClosed,timeoutMs') throw new Invalid('gateway must have exactly: failClosed, timeoutMs, blockThresholds');
+  if (keys !== 'blockThresholds,failClosed,sanitizeMode,timeoutMs') throw new Invalid('gateway must have exactly: failClosed, timeoutMs, blockThresholds, sanitizeMode');
+  if (v.sanitizeMode !== 'off' && v.sanitizeMode !== 'on') throw new Invalid('sanitizeMode must be "off" or "on"');
   if (typeof v.failClosed !== 'boolean') throw new Invalid('failClosed must be a boolean');
-  return { failClosed: v.failClosed, timeoutMs: validateTimeout(v.timeoutMs), blockThresholds: validateThresholds(v.blockThresholds) };
+  return { failClosed: v.failClosed, timeoutMs: validateTimeout(v.timeoutMs), blockThresholds: validateThresholds(v.blockThresholds), sanitizeMode: v.sanitizeMode };
 }
 
 // Does one finding reach its category's block threshold? Compared by severity rank: at or above blocks.
@@ -161,6 +163,8 @@ export function createGateway({ sidecarUrl, fetchImpl = globalThis.fetch, worksp
   }
 
   // request -> (inspect) -> upstream stub -> (inspect response) -> client. A block at request skips the upstream.
+  // Sanitize mode (the deck's fourth outcome): when the decision is allow WITH findings and mode is 'on', the forwarded
+  // unit is masked the same way display copies are; the run records outcome 'sanitize' with the before/after text.
   async function run({ requestText, requestRole = 'user_prompt', upstreamText = '', policy }) {
     const stages = [];
     const req = await inspectStage('request', { role: requestRole, direction: 'request', text: requestText }, policy);
@@ -169,10 +173,13 @@ export function createGateway({ sidecarUrl, fetchImpl = globalThis.fetch, worksp
       stages.push({ stage: 'upstream', skipped: true }, { stage: 'response', skipped: true });
       return { outcome: 'block', blockedAt: 'request', reason: req.reason, stages };
     }
-    stages.push({ stage: 'upstream', skipped: false, chars: upstreamText.length });
+    const sanitize = policy.sanitizeMode === 'on' && req.decision === 'allow' && req.evaluations.length > 0;
+    const forwardedText = sanitize ? safeSnippet(requestText, 10000, maskRules) : requestText;
+    stages.push({ stage: 'upstream', skipped: false, chars: upstreamText.length, ...(sanitize ? { sanitized: true, before: safeSnippet(requestText, 300, maskRules), after: safeSnippet(forwardedText, 300, maskRules) } : {}) });
     const resp = await inspectStage('response', { role: 'assistant_response', direction: 'response', text: upstreamText }, policy);
     stages.push(resp);
     if (resp.decision === 'block') return { outcome: 'block', blockedAt: 'response', reason: resp.reason, stages };
+    if (sanitize) return { outcome: 'sanitize', blockedAt: null, reason: 'sanitized_before_forward', sanitized: { at: 'request', before: safeSnippet(requestText, 300, maskRules), after: safeSnippet(forwardedText, 300, maskRules) }, stages };
     return { outcome: 'allow', blockedAt: null, reason: resp.reason !== 'no_findings' ? resp.reason : req.reason, stages };
   }
 

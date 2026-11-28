@@ -152,3 +152,13 @@ td .verdict, .recorded .verdict, .live .verdict { margin-left: 0; }
 
 .talk { max-width: 52rem; }
 .talk__step { padding-left: 8px; border-left: 3px solid var(--accent); }
+
+/* Sanitize outcome (2026-11-28): the before/after of a sanitized forward, in the recorded-decision line. */
+.sanitize-note { display: block; margin-top: 6px; }
+.sanitize-before, .sanitize-after { font-family: var(--font-mono); font-size: .82em; padding: 1px 4px; border-radius: 4px; }
+.sanitize-before { background: var(--accent-soft); }
+.sanitize-after { background: var(--surface-2); color: var(--status-ok); }
+.v-sanitize { color: var(--status-warn); background: var(--surface-2); }
+
+/* Governance cards (2026-11-28): framework tags as chips. */
+.cm-tag { display: inline-block; font-size: .72rem; padding: 1px 8px; margin: 0 4px 2px 0; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); font-family: var(--font-mono); }

@@ -44,9 +44,9 @@ test('decide: sidecar failure follows the fail-closed toggle', () => {
 });
 
 test('validateGatewayConfig is strict', () => {
-  const good = { failClosed: true, timeoutMs: 500, blockThresholds: T };
+  const good = { failClosed: true, timeoutMs: 500, blockThresholds: T, sanitizeMode: 'off' };
   assert.deepEqual(validateGatewayConfig(good), good);
-  for (const bad of [null, [], { ...good, extra: 1 }, { ...good, failClosed: 'yes' }, { ...good, timeoutMs: 5 }, { ...good, timeoutMs: 1.5 }, { ...good, blockThresholds: { ...T, pii: 'extreme' } }, { ...good, blockThresholds: { pii: 'high' } }]) {
+  for (const bad of [null, [], { ...good, extra: 1 }, { ...good, failClosed: 'yes' }, { ...good, timeoutMs: 5 }, { ...good, timeoutMs: 1.5 }, { ...good, sanitizeMode: 'maybe' }, { ...good, blockThresholds: { ...T, pii: 'extreme' } }, { ...good, blockThresholds: { pii: 'high' } }]) {
     assert.throws(() => validateGatewayConfig(bad), undefined, JSON.stringify(bad));
   }
 });

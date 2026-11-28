@@ -18,6 +18,7 @@ import Thresholds from "./components/Thresholds.jsx";
 import Outage from "./components/Outage.jsx";
 import StandInPanel from "./components/StandInPanel.jsx";
 import Log from "./components/Log.jsx";
+import { SecondLayer, Compliance, Behaviour } from "./components/Governance.jsx";
 import Inert from "./components/Inert.jsx";
 import TalkTrack from "./components/TalkTrack.jsx";
 import SimulationBanner from "./components/SimulationBanner.jsx";
@@ -100,6 +101,7 @@ export default function App() {
   const gw = config?.gateway;
   const thresholds = gw?.blockThresholds ?? { prompt_injection: "medium", jailbreak: "none", pii: "high" };
   const failClosed = gw?.failClosed ?? true;
+  const sanitizeMode = gw?.sanitizeMode ?? "off";
   const detector = config?.sidecar?.detector ?? { threshold: 0.9, benignLabels: [] };
 
   // Edits show at once and are saved (all of the gateway, or all of the sidecar settings) shortly after.
@@ -118,6 +120,7 @@ export default function App() {
   };
   const onThreshold = (cat, level) => scheduleSave("gateway", { gateway: { ...gw, blockThresholds: { ...thresholds, [cat]: level } } });
   const onFailClosed = (v) => scheduleSave("gateway", { gateway: { ...gw, failClosed: v } });
+  const onSanitizeMode = (v) => scheduleSave("gateway", { gateway: { ...gw, sanitizeMode: v } });
   const onDetector = (d) => scheduleSave("sidecar", { sidecar: { ...config.sidecar, detector: d } });
   const onPiiKinds = (piiKinds) => scheduleSave("sidecar", { sidecar: { ...config.sidecar, piiKinds } });
   const onSecretsRail = (secrets) => scheduleSave("sidecar", { sidecar: { ...config.sidecar, rails: { ...config.sidecar.rails, secrets } } });
@@ -277,7 +280,12 @@ export default function App() {
             )}
             {run && (
               <p className="recorded" data-testid="recorded">
-                {result.runs.length > 1 ? `${run.label}: ` : ""}recorded decision <strong className={`verdict v-${run.outcome}`}>{run.outcome === "block" ? `BLOCK at ${run.blockedAt}` : "ALLOW"}</strong>
+                {result.runs.length > 1 ? `${run.label}: ` : ""}recorded decision <strong className={`verdict v-${run.outcome}`}>{run.outcome === "block" ? `BLOCK at ${run.blockedAt}` : run.outcome === "sanitize" ? "SANITIZE" : "ALLOW"}</strong>
+                {run.outcome === "sanitize" && run.sanitized && (
+                  <span className="sanitize-note" data-testid="sanitize-note">
+                    {" "}forwarded with the offending text masked: <code className="sanitize-before">{run.sanitized.before}</code> → <code className="sanitize-after">{run.sanitized.after}</code>
+                  </span>
+                )}
                 {run.expectationMet === false && <span className="fine"> (differs from this scenario's default expectation because settings were changed)</span>}
               </p>
             )}
@@ -292,9 +300,16 @@ export default function App() {
         </div>
 
         <div className="grid two">
-          <Outage failClosed={failClosed} onFailClosed={onFailClosed} fault={fault} onFault={onFault} compare={compare} onCompare={runCompare} busy={busy} />
+          <SecondLayer run={run} />
+          <Compliance run={run} />
+        </div>
+
+        <div className="grid two">
+          <Outage failClosed={failClosed} onFailClosed={onFailClosed} fault={fault} onFault={onFault} compare={compare} onCompare={runCompare} busy={busy} sanitizeMode={sanitizeMode} onSanitizeMode={onSanitizeMode} />
           <StandInPanel info={standIn} onTry={tryText} />
         </div>
+
+        <Behaviour run={run} />
 
         <Log decisions={decisions} />
         <footer className="foot">Demo only. Loopback only. No model, no network. The /inspect contract and gateway behaviour are as understood from the demo environment, not checked against product documentation, and nothing here says anything about real product detection quality, defaults or licensing.</footer>

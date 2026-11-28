@@ -1,10 +1,12 @@
 // Orchestrates the demo: gateway config, caller profiles, scenario runs (serialised, capped queue), the decision log,
 // the fault injector and reset. All text that is stored or returned has been masked and made inert upstream of here.
 import { createDecisionLog } from './decisions.js';
+import { complianceFor } from './compliance.js';
+import { createBehaviour } from './behaviour.js';
 import { CALLERS, listScenarios, scenarioById } from './scenarios.js';
 import { DEFAULT_GATEWAY_CONFIG, Invalid, createGateway, validateGatewayConfig, validateTimeout } from './gateway.js';
 import { DEFAULT_SIDECAR_CONFIG } from './sidecar.js';
-import { STAND_IN_LIMITS, detectInjection } from './detectors.js';
+import { STAND_IN_LIMITS, detectInjection, classify } from './detectors.js';
 import { safeSnippet } from './sidecar.js';
 import { PromptLogInvalid, createPromptLog } from './promptlog.js';
 import { importToml } from './rules.js';
@@ -24,6 +26,7 @@ export class Refused extends Invalid { constructor(message, details, key) { supe
 export function createService({ sidecarUrl, fetchImpl, decisions = createDecisionLog(), workspace, registry = createRegistry() } = {}) {
   const gateway = createGateway({ sidecarUrl, fetchImpl, workspace });
   let config = structuredClone(DEFAULT_GATEWAY_CONFIG);
+  const behaviour = createBehaviour();
   const promptLog = createPromptLog();
   let localRules = []; // compiled copy of the pasted rules, used only to mask text shown back (the sidecar keeps its own)
 
@@ -50,6 +53,7 @@ export function createService({ sidecarUrl, fetchImpl, decisions = createDecisio
       failClosed: run.failClosed ?? config.failClosed,
       timeoutMs: run.timeoutMs ?? config.timeoutMs,
       blockThresholds: caller ? caller.blockThresholds : config.blockThresholds,
+      sanitizeMode: run.sanitizeMode ?? config.sanitizeMode,
     };
   };
 
@@ -67,13 +71,20 @@ export function createService({ sidecarUrl, fetchImpl, decisions = createDecisio
       if (restore) await adminOk('PUT', '/demo/fault', restore).catch(() => {});
     }
     const expectationMet = run.expect ? ['outcome', 'blockedAt', 'reason'].every((k) => result[k] === run.expect[k]) : null;
+    // Model-based second layer (deck claim, informs only): the stand-in's own label scores beside the sidecar's
+    // verdict, so the viewer can compare the two models on the same text without another call.
+    const secondLayer = { standIn: classify(run.requestText).scores, sidecarOk: result.stages[0]?.sidecar?.ok ?? false };
+    const categories = [...new Set(result.stages.flatMap((st) => (st.evaluations ?? []).map((e) => e.category)))];
+    // Compliance tags (lab-invented) and behavioural scoring (informs only) ride on the same entry.
+    const compliance = complianceFor({ categories, outcome: result.outcome, reason: result.reason });
+    const behaviourLevel = run.caller ? behaviour.record(run.caller, categories.length) : null;
     const entry = decisions.add({
       source: meta.source, scenario: meta.scenario ?? null, label: run.label, caller: run.caller ?? null,
       policy: { ...policy, blockThresholds: { ...policy.blockThresholds } },
       injectedFault: run.fault?.mode ?? null,
-      ...result, expected: run.expect ?? null, expectationMet,
+      ...result, expected: run.expect ?? null, expectationMet, secondLayer, compliance,
+      ...(behaviourLevel ? { behaviour: behaviourLevel } : {}),
     });
-    const categories = [...new Set(result.stages.flatMap((st) => (st.evaluations ?? []).map((e) => e.category)))];
     const logged = promptLog.record({ surface: run.requestRole === 'a2a_message' ? 'a2a' : 'llm', requestText: run.requestText, upstreamText: run.upstreamText, caller: run.caller ?? null, result, categories });
     return { ...entry, promptLog: logged.recorded ? { recorded: true, id: logged.record.id, kid: logged.record.kid } : { recorded: false, why: logged.why } };
   }
@@ -157,14 +168,15 @@ export function createService({ sidecarUrl, fetchImpl, decisions = createDecisio
 
     // custom: { requestText, upstreamText?, caller?, failClosed? }
     runCustom(c) {      if (!c || typeof c !== 'object' || Array.isArray(c)) throw new Invalid('custom must be an object');
-      const extra = Object.keys(c).filter((k) => !['requestText', 'upstreamText', 'caller', 'failClosed', 'timeoutMs'].includes(k));
-      if (extra.length) throw new Invalid('unknown field (name hidden); allowed: requestText, upstreamText, caller, failClosed, timeoutMs');
+      const extra = Object.keys(c).filter((k) => !['requestText', 'upstreamText', 'caller', 'failClosed', 'timeoutMs', 'sanitizeMode'].includes(k));
+      if (extra.length) throw new Invalid('unknown field (name hidden); allowed: requestText, upstreamText, caller, failClosed, timeoutMs, sanitizeMode');
       if (typeof c.requestText !== 'string' || !c.requestText.trim() || c.requestText.length > CUSTOM_MAX_CHARS) throw new Invalid(`requestText must be 1-${CUSTOM_MAX_CHARS} characters`);
       if (c.upstreamText !== undefined && (typeof c.upstreamText !== 'string' || c.upstreamText.length > CUSTOM_MAX_CHARS)) throw new Invalid(`upstreamText must be at most ${CUSTOM_MAX_CHARS} characters`);
       if (c.caller !== undefined && !(typeof c.caller === 'string' && Object.hasOwn(CALLERS, c.caller))) throw new Invalid(`caller must be one of ${Object.keys(CALLERS).join(', ')}`);
       if (c.failClosed !== undefined && typeof c.failClosed !== 'boolean') throw new Invalid('failClosed must be a boolean');
       if (c.timeoutMs !== undefined) validateTimeout(c.timeoutMs);
-      const run = { label: 'Custom text', requestText: c.requestText, upstreamText: c.upstreamText ?? '', caller: c.caller, failClosed: c.failClosed, timeoutMs: c.timeoutMs, requestRole: c.caller ? 'a2a_message' : 'user_prompt' };
+      if (c.sanitizeMode !== undefined && c.sanitizeMode !== 'off' && c.sanitizeMode !== 'on') throw new Invalid('sanitizeMode must be "off" or "on"');
+      const run = { label: 'Custom text', requestText: c.requestText, upstreamText: c.upstreamText ?? '', caller: c.caller, failClosed: c.failClosed, timeoutMs: c.timeoutMs, sanitizeMode: c.sanitizeMode, requestRole: c.caller ? 'a2a_message' : 'user_prompt' };
       return enqueue(async () => ({ scenario: null, title: 'Custom text', runs: [await executeRun(run, { source: 'custom' })] }));
     },
 
@@ -224,7 +236,7 @@ export function createService({ sidecarUrl, fetchImpl, decisions = createDecisio
       return enqueue(async () => {
         config = structuredClone(DEFAULT_GATEWAY_CONFIG);
         decisions.clear();
-        promptLog.reset(); localRules = []; gateway.setMaskRules([]);
+        promptLog.reset(); localRules = []; gateway.setMaskRules([]); behaviour.reset();
         await adminOk('DELETE', '/demo/rules');
         await adminOk('PUT', '/demo/config', DEFAULT_SIDECAR_CONFIG);
         await adminOk('PUT', '/demo/fault', { mode: 'none', delayMs: 0 });

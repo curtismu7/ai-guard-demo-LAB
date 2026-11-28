@@ -283,3 +283,29 @@ describe("App", () => {
     expect(css).toMatch(/\.react-flow__controls-button svg \{[^}]*fill:\s*currentColor/);
   });
 });
+
+it("the sanitize switch saves, and a sanitized run shows SANITIZE with before/after", async () => {
+  const user = userEvent.setup();
+  await ready();
+  await user.selectOptions(screen.getByTestId("sanitize-mode"), "on");
+  await waitFor(() => expect(calls.some((c) => c.method === "PUT" && c.url === "/api/config" && c.body.gateway.sanitizeMode === "on")).toBe(true));
+  runs["benign"] = [{ label: "Allowed", outcome: "sanitize", blockedAt: null, reason: "sanitized_before_forward", sanitized: { at: "request", before: "SSN ***-**-6789", after: "SSN [masked:pii]" }, stages: [{ stage: "request", unit: { role: "user_prompt", direction: "request", chars: 20, text: "hello" }, sidecar: { ok: true, status: 200, latencyMs: 5, error: null }, decision: "allow", alert: true, evaluations: [{ category: "pii", severity: "high", index: 0, messages: [], contents: [], threshold: "none", blocks: false }] }, { stage: "upstream", skipped: false, chars: 3, sanitized: true, before: "before", after: "after" }, { stage: "response", skipped: true }], policy: { ...POLICY, sanitizeMode: "on" } }];
+  await user.selectOptions(screen.getByTestId("scenario-pick"), screen.getByRole("option", { name: "Benign prompt" }));
+  await user.click(screen.getByRole("button", { name: "Run scenario" }));
+  await screen.findByTestId("sanitize-note");
+  expect(screen.getByTestId("recorded")).toHaveTextContent("SANITIZE");
+  expect(screen.getByTestId("sanitize-note")).toHaveTextContent("[masked:pii]");
+});
+
+it("the governance cards show the second layer, compliance tags and the behaviour level", async () => {
+  const user = userEvent.setup();
+  await ready();
+  await user.selectOptions(screen.getByTestId("scenario-pick"), screen.getByRole("option", { name: "Direct prompt injection" }));
+  await user.click(screen.getByRole("button", { name: "Run scenario" }));
+  await screen.findByTestId("recorded");
+  expect(screen.getByTestId("second-layer")).toHaveTextContent("Stand-in injection");
+  expect(screen.getByTestId("sl-injection")).toHaveTextContent(/%/);
+  expect(screen.getByTestId("cm-nist-ai-rmf")).toBeInTheDocument();
+  expect(screen.getByTestId("cm-eu-ai-act")).toBeInTheDocument();
+  expect(screen.getByTestId("behaviour")).toHaveTextContent("no calling agent key");
+});
