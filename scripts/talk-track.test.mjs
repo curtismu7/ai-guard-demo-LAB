@@ -18,11 +18,11 @@ test('the generator is deterministic, and the base carries the marker exactly on
   assert.ok(!fs.readFileSync(TRACK_PATH, 'utf8').includes(MARKER), 'the marker is replaced in the output');
 });
 
-test('the H2 section carries the banner, every why-it-matters line marked as a Ping claim, and the numbers from the engine', () => {
+test('the H2 section carries every why-it-matters line marked as a Ping claim, and the numbers from the engine', () => {
   const t = fs.readFileSync(TRACK_PATH, 'utf8');
-  assert.match(t, /Ping release claims, not checked on our tenant/);
+  assert.match(t, /Ping release claims/);
   for (const w of WHY_IT_MATTERS) for (const line of [w.challenge, w.technical, w.business]) assert.ok(t.includes(line), `missing: ${line.slice(0, 40)}`);
-  assert.match(t, /### Why it matters \(Ping claims, not checked on our tenant\)/);
+  assert.match(t, /### Why it matters/);
   assert.ok(t.includes(`${PII_KIND_IDS.length} personal-data kinds`) && t.includes(`${SECRET_DETECTORS.length} bundled secret detectors`));
   for (const id of PII_KIND_IDS) assert.ok(t.includes(id), id);
   for (const d of SECRET_DETECTORS) assert.ok(t.includes(d.id), d.id);

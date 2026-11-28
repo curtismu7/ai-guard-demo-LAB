@@ -22,11 +22,10 @@ const custom = (requestText, extra = {}) => call('POST', '/api/run', { custom: {
 const evals = (r) => r.json.runs[0].stages[0].evaluations;
 const TOML = (id = 'acme-ticket', extra = '') => `[[rules]]\nid = "${id}"\nregex = "ACME-[0-9]{8}"\n${extra}`;
 
-test('GET /api/h2: the banner, the tag legend, Ping\'s numbers beside the app\'s own computed ones, and live proofs', async () => {
+test('GET /api/h2: the tag legend, Ping\'s numbers beside the app\'s own computed ones, and live proofs', async () => {
   await reset();
   const r = await get('/api/h2');
   assert.equal(r.status, 200);
-  assert.equal(r.json.banner, 'Ping release claims, not checked on our tenant');
   assert.deepEqual(r.json.tags, TAGS);
   const n = Object.fromEntries(r.json.numbers.map((x) => [x.id, x]));
   assert.deepEqual([n['pii-kinds'].ping, n['secret-detectors'].ping, n['behavioural-rules'].ping, n['total-rules'].ping], [23, 364, 47, 411]);

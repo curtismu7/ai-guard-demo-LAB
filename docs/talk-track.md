@@ -19,9 +19,9 @@ Setup: `npm run build && npm start`, open `http://127.0.0.1:7900/`. Run the rese
 9. **What the stand-in misses.** In "What the stand-in misses" click **Try this text** on each example. Say: "A paraphrase gets through and a harmless sentence is blocked. Real classifiers have their own errors; this shows the trade-off."
 10. **Close.** Show the "Decision log" and say: "Every decision, masked, in memory only."
 
-## H2 2026 release: data protection (Ping release claims, not checked on our tenant)
+## H2 2026 release: data protection (Ping release claims)
 
-Open the **H2 2026 release** tab. The banner **Ping release claims, not checked on our tenant** is on both tabs: the release (dated 2026-11-02) is not on our tenant, so every product claim here is Ping's, from its deck "ID4AI Workforce - H2 2026", slides 50 and 53. The app's own engine is a small teaching model; its counts are its own and are never Ping's.
+Open the **H2 2026 release** tab. The release (dated 2026-11-02) is not on our tenant, so every product claim here is Ping's, from its deck "ID4AI Workforce - H2 2026", slides 50 and 53. The app's own engine is a small teaching model; its counts are its own and are never Ping's.
 
 Say the challenge first (a Ping claim): "Authorization cannot see content: an agent following hidden instructions can exfiltrate data within policy."
 
@@ -64,7 +64,7 @@ The app's own sets, from its engine: 11 personal-data kinds (card, ssn, iban, ab
 | the sealed-record envelope (X25519 + HKDF-SHA256 + AES-256-GCM), the surfaces this app produces, caps, the ring of 100 records | lab-invented | The product's format is not public. The envelope is this app's own and is shown so the round trip can be proved. |
 | anything measured on our tenant | measured (our note) | Nothing. The release is not on our tenant; nothing here has been measured. |
 
-### Why it matters (Ping claims, not checked on our tenant)
+### Why it matters (Ping claims)
 
 **AIGuard (deck slide 53)**
 

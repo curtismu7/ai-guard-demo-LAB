@@ -227,10 +227,9 @@ try {
   await sleep(300);
   await shot('7-light');
 
-  // H2 2026 release tab (Ping release claims, not checked on our tenant).
+  // H2 2026 release tab.
   await page.getByTestId('tab-h2').click();
   await page.getByTestId('numbers').waitFor();
-  check((await page.getByTestId('release-banner').innerText()) === 'Ping release claims, not checked on our tenant', 'the release banner is on the H2 tab');
   const h2 = await (await fetch(`${base}/api/h2`)).json();
   const kindRow = await page.getByTestId('num-pii-kinds').innerText();
   check(kindRow.includes('23') && kindRow.includes(String(h2.kinds.length)) && /deck claim/.test(kindRow), 'Ping\'s 23 sits beside the app\'s own computed count, tagged');

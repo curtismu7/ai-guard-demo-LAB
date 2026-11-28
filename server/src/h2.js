@@ -1,6 +1,6 @@
 // The H2 2026 release content for this app (Ping's "ID4AI Workforce - H2 2026" deck, slides 50 and 53; release dated 2026-11-02).
 // ONE source for the API (GET /api/h2), the generated talk track and the content pack, so they cannot drift apart.
-// Every product claim below is a Ping release claim, not checked on our tenant: the release is not on our tenant. Ping's numbers
+// Every product claim below is a Ping release claim: the release is not on our tenant. Ping's numbers
 // (23 kinds, 364 secret detectors, 47 behavioural rules, 411 rules) are Ping's, quoted from the deck. The app's own counts are
 // COMPUTED from the engine here, never typed in, and are labelled as the app's.
 import { PII_GROUPS, PII_KIND_IDS, SAMPLES, findPii, LEGACY_KINDS, maskPii, piiCatalogue } from './pii.js';
@@ -11,7 +11,6 @@ import { PL_LIMITS, PL_STORE, SURFACES } from './promptlog.js';
 import { fold } from './fold.js';
 import { maskTyped } from './mask.js';
 
-export const BANNER = 'Ping release claims, not checked on our tenant';
 export const TAGS = Object.freeze({
   deck: 'deck claim',
   swagger: 'console swagger name (schema only)',
@@ -23,7 +22,7 @@ export const TAGS = Object.freeze({
 // Ping's figures, as the deck states them (slide 53). Nothing here was measured on our tenant.
 export const DECK = Object.freeze({ kinds: 23, kindsBefore: 5, secretDetectors: 364, behaviouralRules: 47, totalRules: 411, slide: 53 });
 
-// Challenge / Technical / Business from the deck's value panels (slides 50, 53). Ping claims, not checked on our tenant.
+// Challenge / Technical / Business from the deck's value panels (slides 50, 53). Ping claims.
 export const WHY_IT_MATTERS = Object.freeze([
   { id: 'aiguard', title: 'AIGuard (deck slide 53)', challenge: 'Authorization cannot see content: an agent following hidden instructions can exfiltrate data within policy.', technical: 'Content inspected in and out across MCP, A2A, LLM and coding-agent traffic; deterministic rules add no availability dependency.', business: 'A fraction of the cost of one incident; framework-mapped evidence for AI governance sign-off.' },
   { id: 'prompt-logging', title: 'Prompt Logging (deck slide 50)', challenge: 'Retaining prompts is what investigations need and what teams refuse to hand a vendor.', technical: 'Content sealed to your public key, decrypted only in your console session; Privilege never holds the private half.', business: 'Forensic retention becomes acceptable to security and legal.' },
@@ -70,7 +69,7 @@ export function numbers() {
 
 // The static part: what a talk track or a content pack needs, with no state.
 export function h2Static() {
-  return { banner: BANNER, tags: TAGS, deck: DECK, whyItMatters: WHY_IT_MATTERS, fields: FIELD_TAGS, numbers: numbers(), kinds: piiCatalogue(), groups: PII_GROUPS, secretDetectors: SECRET_DETECTORS.map(({ id, description }) => ({ id, description })), categories: CATEGORY_IDS, severities: SEVERITIES };
+  return { tags: TAGS, deck: DECK, whyItMatters: WHY_IT_MATTERS, fields: FIELD_TAGS, numbers: numbers(), kinds: piiCatalogue(), groups: PII_GROUPS, secretDetectors: SECRET_DETECTORS.map(({ id, description }) => ({ id, description })), categories: CATEGORY_IDS, severities: SEVERITIES };
 }
 
 // The live part: the proofs are computed by running the engine on its own samples now. `selected` = the kinds that are on.

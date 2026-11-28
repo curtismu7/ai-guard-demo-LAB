@@ -81,6 +81,6 @@ test('the H2 2026 limits the docs state are the ones in the code, and the releas
   assert.ok(section.includes(`${TOML_LIMITS.bytes.toLocaleString('en-US')} characters, ${TOML_LIMITS.lines} lines, ${RULE_LIMITS.rulesPerWorkspace} rules per workspace, ${RULE_LIMITS.matchesPerRule} matches per rule`), 'the paste limits');
   assert.ok(section.includes(`a ring of ${PL_STORE.maxRecords}`), 'the record ring');
   assert.ok(section.includes(`${LIMITS.textChars.toLocaleString('en-US')} characters`), 'the unit cap');
-  for (const d of ['README.md', 'docs/safety.md', 'CLAUDE.md']) assert.match(read(d), /not checked on our tenant/, d);
-  assert.match(read('README.md'), /Ping release claims, not checked on our tenant/);
+  for (const d of ['README.md', 'docs/safety.md', 'CLAUDE.md']) assert.match(read(d), /Ping release claim/i, d);
+  assert.match(read('README.md'), /Ping release claims/);
 });

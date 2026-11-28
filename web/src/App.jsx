@@ -36,8 +36,6 @@ const readTheme = () => {
   return "auto";
 };
 const MAX_TEXT = 4000;
-// The release banner: every product claim about the H2 2026 release is Ping's, and not checked on our tenant.
-const RELEASE_BANNER = "Ping release claims, not checked on our tenant";
 const TABS = [["demo", "Sidecar demo"], ["apps", "Agentic Apps"], ["registry", "Agent Registry"], ["h2", "H2 2026 release"]];
 
 export default function App() {
@@ -219,7 +217,6 @@ export default function App() {
       <main id="main" tabIndex={-1}>
         <SimulationBanner info={info} />
         <ReturnLink app="ai-guard-demo" />
-        <p role="note" className="release-banner" data-testid="release-banner">{RELEASE_BANNER}</p>
         <section id="panel-demo" aria-labelledby="tab-demo" hidden={tab !== "demo"}>
         <ErrorBoundary resetKey={`${tab}-demo`}>
         <p className="lede">How an AI guard screens what agents send and receive. A mock gateway forwards text to a guardrail and applies its answer — pick a scenario, press Simulate, then change the thresholds or break the guardrail.</p>

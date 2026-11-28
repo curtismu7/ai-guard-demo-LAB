@@ -11,7 +11,7 @@ const MAX_TEXT = 4000;
 const list = (v) => (Array.isArray(v) ? v : []);
 
 // The H2 2026 release tab: personal-data kinds, secret detectors, your own gitleaks-format rules and prompt logging sealed to your key.
-// Everything here is a Ping release claim, not checked on our tenant; the app's own counts are computed by its engine, never typed in.
+// Everything here is a Ping release claim; the app's own counts are computed by its engine, never typed in.
 export default function H2Tab({ config, onPiiKinds, onSecretsRail, thresholds, failClosed, keyring, setKeyring, resetKey, onRan }) {
   const [h2, setH2] = useState(null);
   const [error, setError] = useState("");
@@ -91,7 +91,7 @@ export default function H2Tab({ config, onPiiKinds, onSecretsRail, thresholds, f
 
       <section className="card" aria-labelledby="h2-why-h">
         <div className="card-head"><h2 id="h2-why-h">Why it matters</h2><span className="badges"><ClaimTag tag="deck" /></span></div>
-        <p className="fine">Challenge, technical and business value as Ping's deck words them. Ping claims, not checked on our tenant.</p>
+        <p className="fine">Challenge, technical and business value as Ping's deck words them. </p>
         {why.map((w) => (
           <div key={w.id} className="limit" data-testid={`why-${w.id}`}>
             <h3>{w.title}</h3>
