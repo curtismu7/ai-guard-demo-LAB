@@ -219,7 +219,7 @@ export default function App() {
         <p role="note" className="release-banner" data-testid="release-banner">{RELEASE_BANNER}</p>
         <section id="panel-demo" aria-labelledby="tab-demo" hidden={tab !== "demo"}>
         <ErrorBoundary resetKey={`${tab}-demo`}>
-        <p className="lede">How an external guardrail sidecar plugs into an agent gateway. A mock gateway sends text to a stand-in sidecar over loopback HTTP and applies its answer. Pick a scenario, press Simulate, then change the thresholds or break the sidecar.</p>
+        <p className="lede">How an AI guard screens what agents send and receive. A mock gateway forwards text to a guardrail and applies its answer — pick a scenario, press Simulate, then change the thresholds or break the guardrail.</p>
         <Story />
         {showTalk && <TalkTrack />}
         {error && <p role="alert" className="error" data-testid="error">{error}</p>}
@@ -230,12 +230,12 @@ export default function App() {
             <div className="card-head"><h2 id="pick-h"><span className="step-num" aria-hidden="true">1</span>Pick something to try</h2></div>
             <fieldset className="picker">
               <legend className="sr-only">Scenario</legend>
-              {scenarios.map((s) => (
-                <label key={s.id} className={`pick ${selected === s.id ? "on" : ""}`}>
-                  <input type="radio" name="scenario" value={s.id} checked={selected === s.id} onChange={() => setSelected(s.id)} />
-                  <span>{s.title}{s.knownLimit && <em className="limit-tag">{s.knownLimit === "miss" ? "a miss" : "false alarm"}</em>}</span>
-                </label>
-              ))}
+              <label htmlFor="scenario-pick" className="sr-only">Scenario</label>
+              <select id="scenario-pick" className="scenario-pick" data-testid="scenario-pick" value={selected} onChange={(e) => setSelected(e.target.value)}>
+                {scenarios.map((s) => (
+                  <option key={s.id} value={s.id}>{s.title}{s.knownLimit ? ` (${s.knownLimit === "miss" ? "a miss" : "false alarm"})` : ""}</option>
+                ))}
+              </select>
             </fieldset>
             {picked && <p className="teaches" data-testid="teaches">{picked.teaches}</p>}
             <div className="row"><button type="button" className="btn primary" onClick={simulate} disabled={busy || !picked}>{busy ? "Running..." : "Run scenario"}</button></div>

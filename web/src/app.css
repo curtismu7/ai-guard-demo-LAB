@@ -64,6 +64,7 @@ legend { font-weight: 600; font-size: .85rem; padding: 0 4px; }
 .sub-h { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
 
 .picker { border: 0; padding: 0; display: grid; gap: 6px; }
+.scenario-pick { max-width: 340px; width: 100%; }
 .pick { display: flex; align-items: center; margin: 0; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: .92rem; }
 .pick.on { border-color: var(--accent); background: var(--surface-2); }
 .limit-tag { margin-left: 8px; font-style: normal; font-size: .72rem; color: var(--status-info); background: var(--surface-2); padding: 1px 6px; border-radius: 999px; }
@@ -91,7 +92,15 @@ legend { font-weight: 600; font-size: .85rem; padding: 0 4px; }
 .pane h4 .sub, .sub { color: var(--muted); font-weight: 400; }
 .panes { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 760px) { .panes { grid-template-columns: 1fr 1fr; } }
-.exchange + .exchange { margin-top: 14px; }
+.exchange + .exchange { margin-top: 8px; }
+.exchange-head { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; cursor: pointer; text-align: left; }
+.exchange-head:hover { background: var(--surface-2); }
+.exchange-caret { flex: none; }
+.exchange-title { font-weight: 600; flex: none; }
+.exchange-summary { margin-left: auto; text-align: right; }
+.exchange--open { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
+.exchange--open .exchange-head { border: 0; padding: 0 0 8px; background: transparent; }
+.exchange--open .panes { margin-top: 4px; }
 mark.chip { background: var(--surface-2); color: var(--status-warn); border: 1px solid var(--status-warn); border-radius: 4px; padding: 0 3px; font-family: var(--font-mono); font-size: .85em; }
 
 .table-wrap { overflow-x: auto; max-width: 100%; }

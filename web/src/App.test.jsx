@@ -53,7 +53,7 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
-const ready = async () => { render(<App />); await screen.findByLabelText("Benign prompt"); };
+const ready = async () => { render(<App />); await screen.findByTestId("scenario-pick"); };
 
 describe("App", () => {
   it("shows the local Mock banner as main's first child in the local demo (no hosted text, not live)", async () => {
@@ -144,9 +144,10 @@ describe("App", () => {
   it("runs a scenario and shows the exact /inspect exchange, findings and decision", async () => {
     const user = userEvent.setup();
     await ready();
-    await user.click(screen.getByLabelText("Direct prompt injection"));
+    await user.selectOptions(screen.getByTestId("scenario-pick"), screen.getByRole("option", { name: "Direct prompt injection" }));
     await user.click(screen.getByRole("button", { name: "Run scenario" }));
     const ex = await screen.findByTestId("exchange-request");
+    await user.click(within(ex).getByTestId("exchange-toggle-request"));
     expect(ex.textContent).toContain('"app_name": "mock-gateway"');
     expect(ex.textContent).toContain('"location"');
     expect(screen.getByTestId("verdict-request")).toHaveTextContent("BLOCK");
@@ -157,9 +158,10 @@ describe("App", () => {
   it("each /inspect pane has a Form | JSON toggle and the choice applies to every pane", async () => {
     const user = userEvent.setup();
     await ready();
-    await user.click(screen.getByLabelText("Direct prompt injection"));
+    await user.selectOptions(screen.getByTestId("scenario-pick"), screen.getByRole("option", { name: "Direct prompt injection" }));
     await user.click(screen.getByRole("button", { name: "Run scenario" }));
     const ex = await screen.findByTestId("exchange-request");
+    await user.click(within(ex).getByTestId("exchange-toggle-request"));
     const sends = within(ex).getByRole("group", { name: "Gateway sends JSON view" });
     expect(within(sends).getAllByRole("button").map((b) => b.textContent)).toEqual(["Form", "JSON"]);
     expect(within(sends).getByRole("button", { name: "JSON" })).toHaveAttribute("aria-pressed", "true");
@@ -173,7 +175,7 @@ describe("App", () => {
   it("moving a threshold slider flips the decision live and saves it", async () => {
     const user = userEvent.setup();
     await ready();
-    await user.click(screen.getByLabelText("Direct prompt injection"));
+    await user.selectOptions(screen.getByTestId("scenario-pick"), screen.getByRole("option", { name: "Direct prompt injection" }));
     await user.click(screen.getByRole("button", { name: "Run scenario" }));
     await screen.findByTestId("verdict-request");
     expect(screen.getByTestId("live-decision")).toHaveTextContent(/BLOCKS at request/);
@@ -221,9 +223,10 @@ describe("App", () => {
     hostile.stages[0].evaluations[0].messages = ["<b>bold</b> [U+202E] trick"];
     runs["direct-injection"] = [hostile];
     await ready();
-    await user.click(screen.getByLabelText("Direct prompt injection"));
+    await user.selectOptions(screen.getByTestId("scenario-pick"), screen.getByRole("option", { name: "Direct prompt injection" }));
     await user.click(screen.getByRole("button", { name: "Run scenario" }));
     const ex = await screen.findByTestId("exchange-request");
+    await user.click(within(ex).getByTestId("exchange-toggle-request"));
     expect(ex.querySelector("img")).toBeNull();
     expect(ex.textContent).toContain("<img src=x onerror=alert(1)>");
     expect(ex.textContent).toContain("a[U+200B]b");
@@ -263,7 +266,7 @@ describe("App", () => {
     await ready();
     expect(document.getElementById("custom-text")).toHaveAttribute("dir", "ltr");
     expect(document.getElementById("custom-reply")).toHaveAttribute("dir", "ltr");
-    await user.click(screen.getByLabelText("Direct prompt injection"));
+    await user.selectOptions(screen.getByTestId("scenario-pick"), screen.getByRole("option", { name: "Direct prompt injection" }));
     await user.click(screen.getByRole("button", { name: "Run scenario" }));
     await screen.findByTestId("findings-request");
     const findings = screen.getByRole("region", { name: /findings table, scrollable/ });

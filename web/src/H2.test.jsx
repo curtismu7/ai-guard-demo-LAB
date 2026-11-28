@@ -55,7 +55,7 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
-const ready = async () => { const user = userEvent.setup(); render(<App />); await screen.findByLabelText("Benign prompt"); return user; };
+const ready = async () => { const user = userEvent.setup(); render(<App />); await screen.findByTestId("scenario-pick"); return user; };
 const openH2 = async (user) => { await user.click(screen.getByTestId("tab-h2")); await screen.findByTestId("numbers"); };
 
 describe("H2 2026 release tab", () => {
@@ -70,7 +70,7 @@ describe("H2 2026 release tab", () => {
       expect(screen.getByTestId("h2-tab")).toBeVisible();
       expect(document.getElementById("panel-demo")).toHaveAttribute("hidden");
       await user.click(screen.getByTestId("tab-demo"));
-      expect(screen.getByLabelText("Benign prompt")).toBeVisible();
+      expect(screen.getByTestId("scenario-pick")).toBeVisible();
       expect(screen.getByTestId("tab-demo")).toHaveAttribute("aria-current", "page");
     }
   });
@@ -104,7 +104,7 @@ describe("H2 2026 release tab", () => {
     expect(await screen.findByTestId("boundary")).toHaveTextContent("could not be shown");
     expect(screen.getByTestId("release-banner")).toBeInTheDocument();
     await u3.click(screen.getByTestId("tab-demo"));
-    expect(screen.getByLabelText("Benign prompt")).toBeVisible();
+    expect(screen.getByTestId("scenario-pick")).toBeVisible();
     await u3.click(screen.getByTestId("tab-h2"));
     expect(await screen.findByTestId("boundary")).toBeInTheDocument();
     console.error.mockRestore?.();
