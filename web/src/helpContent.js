@@ -18,7 +18,7 @@ export const HELP_SECTIONS = [
   },
   {
     heading: "Mode honesty",
-    body: "Mock mode runs an in-process stand-in sidecar; nothing real is contacted, no model, no network — loopback only. Real mode, when configured, sends the same requests to the configured sidecar; the gateway logic on this page is unchanged and still the lab's own. The banner always names which mode you are in."
+    body: "Mock mode runs an in-process stand-in sidecar; nothing real is contacted, no model, no network — loopback only. Real mode, when configured, sends the same requests to the configured sidecar; the gateway logic on this page is unchanged and still the lab's own. The window that opens with the page names which mode you are in (MOCK or REAL), and the Mock/Real switch in the header shows it afterwards."
   },
   {
     heading: "Your text and reset",
