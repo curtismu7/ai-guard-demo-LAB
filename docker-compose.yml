@@ -22,6 +22,12 @@ services:
       # reachable if it publishes on 0.0.0.0 (not the default) or the lab runs from a host checkout.
       AI_GUARD_ALLOW_EXTERNAL_SIDECAR: ${AI_GUARD_ALLOW_EXTERNAL_SIDECAR:-}
       AI_GUARD_SIDECAR_PORT: ${AI_GUARD_SIDECAR_PORT:-7902}
+      # Optional real PingOne Protect behavioral-risk layer (see docs/specs/2026-11-27-protect-layer.md):
+      # all three must be set; absent otherwise. Values live in this gitignored .env and Bitwarden.
+      PINGONE_PROTECT_ENV_ID: ${PINGONE_PROTECT_ENV_ID:-}
+      PINGONE_PROTECT_WORKER_CLIENT_ID: ${PINGONE_PROTECT_WORKER_CLIENT_ID:-}
+      PINGONE_PROTECT_WORKER_SECRET: ${PINGONE_PROTECT_WORKER_SECRET:-}
+      PINGONE_PROTECT_REGION: ${PINGONE_PROTECT_REGION:-com}
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
