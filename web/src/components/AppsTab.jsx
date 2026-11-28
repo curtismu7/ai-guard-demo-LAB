@@ -48,10 +48,6 @@ export default function AppsTab({ apps, onAppsChanged, resetKey }) {
       {error && <p role="alert" className="error">{error}</p>}
       <p className="sr-only" role="status" aria-live="polite">{status}</p>
 
-      <div className="row" style={{ marginBottom: "0.75rem" }}>
-        <button type="button" className="btn primary" data-testid="add-app" onClick={() => setForm({ mode: "add", initial: { name: "", mcpUrl: "", toolsText: "", published: true } })}>Add Application (MCP Server)</button>
-      </div>
-
       {form && <AppForm initial={form.initial} submitLabel={form.mode === "edit" ? "Save changes" : "Create application"} onCancel={() => setForm(null)} onSubmit={save} />}
 
       <div className="grid two">
@@ -69,6 +65,11 @@ export default function AppsTab({ apps, onAppsChanged, resetKey }) {
             </div>
           </section>
         ))}
+      </div>
+
+      <div className="row" style={{ marginTop: "0.75rem" }}>
+        <button type="button" className="btn" data-testid="add-app" onClick={() => setForm({ mode: "add", initial: { name: "", mcpUrl: "", toolsText: "", published: true } })}>Show how an app is registered</button>
+        <span className="fine">In the product this is a wizard: name, MCP server, tools, publish. The demo apps above are already registered.</span>
       </div>
     </div>
   );
