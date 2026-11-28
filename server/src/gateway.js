@@ -13,12 +13,18 @@ import { WORKSPACE_RE } from './workspaces.js';
 
 export const THRESHOLD_LEVELS = ['low', 'medium', 'high', 'none'];
 export const CATEGORIES = ['prompt_injection', 'jailbreak', 'pii'];
+// AI_GUARD_DEFAULT_TIMEOUT_MS overrides the demo's default sidecar timeout (a real classifier can take
+// longer than the 1000ms teaching default; the value is clamped to TIMEOUT_RANGE at startup).
+const envTimeout = Number.parseInt(process.env.AI_GUARD_DEFAULT_TIMEOUT_MS ?? '', 10);
+const TIMEOUT_MIN = 100;
+const TIMEOUT_MAX = 5000;
+const defaultTimeout = Number.isInteger(envTimeout) && envTimeout >= TIMEOUT_MIN && envTimeout <= TIMEOUT_MAX ? envTimeout : 1000;
 export const DEFAULT_GATEWAY_CONFIG = Object.freeze({
   failClosed: true,
-  timeoutMs: 1000,
+  timeoutMs: defaultTimeout,
   blockThresholds: { prompt_injection: 'medium', jailbreak: 'none', pii: 'high' },
 });
-export const TIMEOUT_RANGE = [100, 5000];
+export const TIMEOUT_RANGE = [TIMEOUT_MIN, TIMEOUT_MAX];
 // A category the demo does not know blocks at this level (a conservative demo choice).
 export const UNKNOWN_CATEGORY_THRESHOLD = 'high';
 export const MAX_RESPONSE_BYTES = 256 * 1024;

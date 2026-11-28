@@ -160,3 +160,18 @@ test('a timeout is reported as a timeout and honours the toggle', { timeout: 150
   assert.equal(r.stages[0].sidecar.error, 'sidecar_timeout');
   assert.equal(r.outcome, 'block');
 });
+
+test('AI_GUARD_DEFAULT_TIMEOUT_MS sets the shipped default, clamped to the valid range', async () => {
+  const load = async (v) => {
+    if (v === undefined) delete process.env.AI_GUARD_DEFAULT_TIMEOUT_MS;
+    else process.env.AI_GUARD_DEFAULT_TIMEOUT_MS = v;
+    const m = await import(`../src/gateway.js?default-timeout-${v ?? 'unset'}-${Math.random()}`);
+    delete process.env.AI_GUARD_DEFAULT_TIMEOUT_MS;
+    return m.DEFAULT_GATEWAY_CONFIG.timeoutMs;
+  };
+  assert.equal(await load(), 1000, 'unset keeps the teaching default');
+  assert.equal(await load('3000'), 3000);
+  assert.equal(await load('99999'), 1000, 'above the range is ignored');
+  assert.equal(await load('50'), 1000, 'below the range is ignored');
+  assert.equal(await load('nonsense'), 1000, 'not a number is ignored');
+});
